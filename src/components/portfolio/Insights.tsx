@@ -1,0 +1,70 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { INSIGHTS } from "@/lib/data";
+
+export default function Insights() {
+  return (
+    <section id="insights" className="relative px-5 md:px-10 py-24 md:py-36">
+      <div className="flex items-end justify-between mb-12 md:mb-16">
+        <div>
+          <span className="section-label">05 — Insights</span>
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-4 font-display font-bold text-4xl md:text-6xl tracking-tight"
+          >
+            Writing & <span className="text-stroke-accent">thinking</span>
+          </motion.h2>
+        </div>
+        <span className="hidden md:block font-mono2 text-[10px] tracking-[0.25em] uppercase text-[#8f8f8f]">
+          (12 Articles)
+        </span>
+      </div>
+
+      <div>
+        {INSIGHTS.map((ins, i) => (
+          <motion.article
+            key={ins.title}
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.5, delay: Math.min(i * 0.04, 0.3) }}
+            className="group relative border-t border-white/10 last:border-b cursor-pointer overflow-hidden"
+            data-cursor="Read"
+          >
+            {/* hover fill */}
+            <div className="absolute inset-0 bg-[#ccff00] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
+
+            <div className="relative flex items-center gap-4 md:gap-8 py-5 md:py-7 px-1 md:px-2 group-hover:px-4 md:group-hover:px-6 transition-all duration-500">
+              <span className="font-mono2 text-[10px] text-[#8f8f8f] group-hover:text-black/60 transition-colors duration-300 shrink-0 w-6">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+
+              <h3 className="flex-1 min-w-0 font-display font-medium text-lg md:text-[26px] tracking-tight text-[#ededed] group-hover:text-black transition-colors duration-300 truncate">
+                {ins.title}
+              </h3>
+
+              <span className="hidden sm:inline-block shrink-0 px-3 py-1 rounded-full border border-white/15 group-hover:border-black/25 font-mono2 text-[9px] tracking-[0.16em] uppercase text-[#b5b5b5] group-hover:text-black/70 transition-colors duration-300">
+                {ins.tag}
+              </span>
+
+              <span className="hidden md:block shrink-0 font-mono2 text-[10px] tracking-[0.12em] text-[#8f8f8f] group-hover:text-black/60 transition-colors duration-300">
+                {ins.readTime}
+              </span>
+
+              <span className="shrink-0 w-9 h-9 rounded-full border border-white/20 group-hover:border-black/40 flex items-center justify-center text-[#b5b5b5] group-hover:text-black group-hover:rotate-45 transition-all duration-400">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                  <line x1="7" y1="17" x2="17" y2="7" />
+                  <polyline points="8 7 17 7 17 16" />
+                </svg>
+              </span>
+            </div>
+          </motion.article>
+        ))}
+      </div>
+    </section>
+  );
+}
