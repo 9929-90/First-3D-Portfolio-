@@ -11,7 +11,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Rohit Suthar — Aspiring Data Engineer",
+  title: "Rohit Suthar | Portfolio",
   description:
     "Portfolio of Rohit Suthar, fresher Data Engineer from Udaipur, India. Python, SQL, PySpark, Databricks, Kafka, Azure — building reliable data pipelines and end-to-end products.",
   keywords: [

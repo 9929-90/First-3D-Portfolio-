@@ -229,7 +229,7 @@ export const PROJECTS: Project[] = [
     status: "wip",
     url: null,
     repo: "https://github.com/9929-90/UPI-Transactions-Monitor",
-    image: "/portfolio/upi-monitor.png",
+    image: "/portfolio/UPIproject.png",
     tech: ["Apache Kafka", "PySpark", "Structured Streaming", "Python", "Parquet", "Docker", "pytest"],
   },
   {
