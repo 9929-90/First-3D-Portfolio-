@@ -14,12 +14,11 @@ import { readableHex } from "./techIcons";
    · fresnel atmosphere shells (additive, backside)
    · ring systems on two planets (1D radial band texture)
    · central data-core + a single lime micro-satellite
-   · orbital rings (LineLoops)
    · 3-layer star field + one distant spiral galaxy
    · low-opacity nebula sprites + near-camera dust
    · holographic SVG technology markers orbiting each planet
 
-   Draw calls ≈ 70 desktop / ≈ 50 mobile. No post-processing,
+   Draw calls ≈ 64 desktop / ≈ 44 mobile. No line primitives,
    no shadow maps, no render targets.
    ═══════════════════════════════════════════════════════════════ */
 
@@ -229,27 +228,7 @@ export function buildGalaxy(
     group.add(dust);
   }
 
-  /* ── orbital rings — the intentional design; no connector lines ── */
-  const orbitMats: THREE.LineBasicMaterial[] = [];
-  for (let i = 0; i < PLANETS.length; i++) {
-    const o = PLANETS[i].look.orbit;
-    const pts: number[] = [];
-    for (let k = 0; k < 160; k++) {
-      const a = (k / 160) * Math.PI * 2;
-      pts.push(Math.cos(a) * o.r, 0, Math.sin(a) * o.r);
-    }
-    const g = track(new THREE.BufferGeometry());
-    g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
-    const m = track(new THREE.LineBasicMaterial({
-      color: 0x536c83, transparent: true, opacity: 0, depthWrite: false,
-    }));
-    orbitMats.push(m);
-    const line = new THREE.LineLoop(g, m);
-    line.position.y = o.y;
-    group.add(line);
-  }
-
-  /* ── planets ── */
+  /* ── planets — zero line geometry anywhere in the scene ── */
   interface PlanetRig {
     def: (typeof PLANETS)[number];
     mesh: THREE.Mesh;
@@ -389,11 +368,8 @@ export function buildGalaxy(
       const la = performance.now() * 0.0007;
       limeSat.position.set(Math.cos(la) * 0.95, Math.sin(la * 2) * 0.12, Math.sin(la) * 0.95);
 
-      /* orbit lines fade with the reveal */
+      /* reveal value still eases the planet ring-band brightness */
       orbitCurrent += (orbitTarget - orbitCurrent) * (1 - Math.exp(-d * 3.2));
-      for (const m of orbitMats) {
-        m.opacity = orbitCurrent * 0.62;
-      }
 
       /* nebula breathing */
       nebulaCurrent += (nebulaTargetRef.value - nebulaCurrent) * (1 - Math.exp(-d * 2.5));
