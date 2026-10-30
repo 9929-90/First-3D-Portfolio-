@@ -1,14 +1,26 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-/* ── Lenis smooth scroll singleton ─────────────────────────── */
+gsap.registerPlugin(ScrollTrigger);
+
+/* shared motion preference — read once, reused by every animated module */
+export function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/* ── Lenis smooth scroll driven by the GSAP ticker ────────────
+   One clock for the whole page: Lenis feeds ScrollTrigger.update,
+   gsap.ticker drives Lenis. No competing rAF loops. */
 export function useSmoothScroll() {
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-     
-    let lenis: any = null;
-    let raf = 0;
+    if (prefersReducedMotion()) return;
+
+    let lenis: import("lenis").default | null = null;
+    let tick: ((time: number) => void) | null = null;
     let cancelled = false;
 
     import("lenis").then(({ default: Lenis }) => {
@@ -20,21 +32,26 @@ export function useSmoothScroll() {
         touchMultiplier: 1.4,
       });
 
-      const loop = (time: number) => {
-        lenis?.raf(time);
-        raf = requestAnimationFrame(loop);
-      };
-      raf = requestAnimationFrame(loop);
+      lenis.on("scroll", ScrollTrigger.update);
+      tick = (time: number) => lenis?.raf(time * 1000);
+      gsap.ticker.add(tick);
+      gsap.ticker.lagSmoothing(0);
       (window as unknown as { __lenis?: unknown }).__lenis = lenis;
     });
 
     return () => {
       cancelled = true;
-      cancelAnimationFrame(raf);
+      if (tick) gsap.ticker.remove(tick);
       lenis?.destroy();
       (window as unknown as { __lenis?: unknown }).__lenis = undefined;
     };
   }, []);
+}
+
+export function scrollToTop() {
+  const lenis = (window as unknown as { __lenis?: { scrollTo: (t: number, o?: Record<string, unknown>) => void } }).__lenis;
+  if (lenis) lenis.scrollTo(0, { duration: 1.4 });
+  else window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 export function scrollToSection(hash: string) {

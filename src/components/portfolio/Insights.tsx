@@ -33,7 +33,7 @@ export default function Insights() {
             Writing & <span className="text-stroke">thinking</span>
           </motion.h2>
         </div>
-        <span className="hidden md:block font-mono2 text-[10px] tracking-[0.25em] uppercase text-[#8b94a0]">
+        <span className="hidden md:block font-mono2 text-[10px] tracking-[0.25em] uppercase text-[#7E8994]">
           (12 Articles)
         </span>
       </div>
@@ -50,26 +50,26 @@ export default function Insights() {
             data-cursor="Read"
           >
             {/* hover fill — quiet silver wash instead of loud accent */}
-            <div className="absolute inset-0 bg-[#a8b0bb]/[0.05] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
+            <div className="absolute inset-0 bg-[#A9B2BC]/[0.05] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
 
             <div className="relative flex items-center gap-4 md:gap-8 py-5 md:py-7 px-1 md:px-2 group-hover:px-4 md:group-hover:px-6 transition-all duration-500">
-              <span className="font-mono2 text-[10px] text-[#8b94a0] group-hover:text-[#5c9ead] transition-colors duration-300 shrink-0 w-6">
+              <span className="font-mono2 text-[10px] text-[#7E8994] group-hover:text-[#536C83] transition-colors duration-300 shrink-0 w-6">
                 {String(i + 1).padStart(2, "0")}
               </span>
 
-              <h3 className="flex-1 min-w-0 font-display font-medium text-lg md:text-[26px] tracking-tight text-[#e8eaee] group-hover:text-white group-hover:translate-x-1 transition-all duration-400 truncate">
+              <h3 className="flex-1 min-w-0 font-display font-medium text-lg md:text-[26px] tracking-tight text-[#E6E9ED] group-hover:text-white group-hover:translate-x-1 transition-all duration-400 truncate">
                 {ins.title}
               </h3>
 
-              <span className="hidden sm:inline-block shrink-0 px-3 py-1 rounded-full border border-white/15 group-hover:border-[#5c9ead]/40 font-mono2 text-[9px] tracking-[0.16em] uppercase text-[#a8b0bb] group-hover:text-[#5c9ead] transition-colors duration-300">
+              <span className="hidden sm:inline-block shrink-0 px-3 py-1 rounded-full border border-white/15 group-hover:border-[#536C83]/40 font-mono2 text-[9px] tracking-[0.16em] uppercase text-[#A9B2BC] group-hover:text-[#536C83] transition-colors duration-300">
                 {ins.tag}
               </span>
 
-              <span className="hidden md:block shrink-0 font-mono2 text-[10px] tracking-[0.12em] text-[#8b94a0] group-hover:text-[#a8b0bb] transition-colors duration-300">
+              <span className="hidden md:block shrink-0 font-mono2 text-[10px] tracking-[0.12em] text-[#7E8994] group-hover:text-[#A9B2BC] transition-colors duration-300">
                 {ins.readTime}
               </span>
 
-              <span className="shrink-0 w-9 h-9 rounded-full border border-white/20 group-hover:border-[#5c9ead] flex items-center justify-center text-[#a8b0bb] group-hover:text-[#5c9ead] group-hover:rotate-45 transition-all duration-400">
+              <span className="shrink-0 w-9 h-9 rounded-full border border-white/20 group-hover:border-[#536C83] flex items-center justify-center text-[#A9B2BC] group-hover:text-[#536C83] group-hover:rotate-45 transition-all duration-400">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                   <line x1="7" y1="17" x2="17" y2="7" />
                   <polyline points="8 7 17 7 17 16" />

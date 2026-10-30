@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { IDENTITY, SOCIALS } from "@/lib/data";
-import { useMagnetic, useLocalTimeIST } from "./hooks";
+import { useMagnetic, useLocalTimeIST, scrollToTop } from "./hooks";
 
 const CTAScene = dynamic(() => import("./CTAScene"), { ssr: false });
 
@@ -12,7 +12,7 @@ export default function Contact() {
   const time = useLocalTimeIST();
 
   return (
-    <footer id="contact" className="relative overflow-hidden bg-[#050505] border-t border-white/[0.07]">
+    <footer id="contact" className="relative overflow-hidden bg-[#08090B] border-t border-white/[0.07]">
       <CTAScene />
 
       <div className="relative z-10 px-5 md:px-10 pt-24 md:pt-36 pb-8 flex flex-col min-h-[92svh]">
@@ -55,7 +55,7 @@ export default function Contact() {
               <a
                 href={`mailto:${IDENTITY.email}`}
                 data-cursor="Say hi"
-                className="group relative inline-flex items-center gap-4 px-8 md:px-10 py-4 md:py-5 rounded-full bg-[#e8eaee] text-black font-display font-semibold text-base md:text-lg hover:bg-[#5c9ead] hover:text-white transition-colors duration-300"
+                className="group relative inline-flex items-center gap-4 px-8 md:px-10 py-4 md:py-5 rounded-full bg-[#E6E9ED] text-black font-display font-semibold text-base md:text-lg hover:bg-[#536C83] hover:text-white transition-colors duration-300"
               >
                 <span className="w-2.5 h-2.5 rounded-full bg-[#ccff00] group-hover:animate-ping" />
                 {IDENTITY.email}
@@ -76,18 +76,18 @@ export default function Contact() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.1 + i * 0.06 }}
                 data-cursor={s.short}
-                className="group rounded-xl border border-white/10 bg-[#0a0d12]/50 backdrop-blur-sm px-4 py-4 text-left hover:border-[#5c9ead]/50 hover:-translate-y-1 transition-all duration-300"
+                className="group rounded-xl border border-white/10 bg-[#10141A]/50 backdrop-blur-sm px-4 py-4 text-left hover:border-[#536C83]/50 hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-mono2 text-[9px] tracking-[0.2em] uppercase text-[#8b94a0] group-hover:text-[#5c9ead] transition-colors">
+                  <span className="font-mono2 text-[9px] tracking-[0.2em] uppercase text-[#7E8994] group-hover:text-[#536C83] transition-colors">
                     {s.label}
                   </span>
-                  <svg className="text-[#8b94a0] group-hover:text-[#5c9ead] group-hover:rotate-45 transition-all duration-300" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+                  <svg className="text-[#7E8994] group-hover:text-[#536C83] group-hover:rotate-45 transition-all duration-300" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
                     <line x1="7" y1="17" x2="17" y2="7" />
                     <polyline points="8 7 17 7 17 16" />
                   </svg>
                 </div>
-                <div className="mt-1.5 font-mono2 text-[10px] text-[#b5b5b5] truncate">{s.handle}</div>
+                <div className="mt-1.5 font-mono2 text-[10px] text-[#AFB6BE] truncate">{s.handle}</div>
               </motion.a>
             ))}
           </div>
@@ -95,19 +95,19 @@ export default function Contact() {
 
         {/* bottom bar */}
         <div className="mt-20 pt-6 pb-20 md:pb-6 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="font-mono2 text-[9.5px] tracking-[0.2em] uppercase text-[#8f8f8f]">
+          <div className="font-mono2 text-[9.5px] tracking-[0.2em] uppercase text-[#79828D]">
             © 2025 {IDENTITY.name} — All rights reserved
           </div>
 
-          <div className="font-mono2 text-[9.5px] tracking-[0.2em] uppercase text-[#8f8f8f] flex items-center gap-2">
+          <div className="font-mono2 text-[9.5px] tracking-[0.2em] uppercase text-[#79828D] flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#ccff00] animate-pulse" />
             {time} IST — {IDENTITY.location}
           </div>
 
           <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            onClick={scrollToTop}
             data-cursor="Top"
-            className="font-mono2 text-[9.5px] tracking-[0.2em] uppercase text-[#b5b5b5] hover:text-[#5c9ead] transition-colors"
+            className="font-mono2 text-[9.5px] tracking-[0.2em] uppercase text-[#AFB6BE] hover:text-[#536C83] transition-colors"
           >
             Back to top ↑
           </button>

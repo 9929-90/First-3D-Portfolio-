@@ -43,26 +43,26 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
           exit={{ y: "-100%" }}
           transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
         >
-          <div className="w-full h-full bg-[#050505] border-b border-[#5c9ead]/25" />
+          <div className="w-full h-full bg-[#08090B] border-b border-[#536C83]/25" />
         </motion.div>
       )}
       <motion.div
         key="preloader-content"
-        className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050505]"
+        className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#08090B]"
         exit={{ opacity: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
       >
         {/* corner meta */}
-        <div className="absolute top-6 left-6 md:top-8 md:left-10 font-mono2 text-[10px] tracking-[0.3em] text-[#8f8f8f] uppercase">
+        <div className="absolute top-6 left-6 md:top-8 md:left-10 font-mono2 text-[10px] tracking-[0.3em] text-[#79828D] uppercase">
           Portfolio © 2025
         </div>
-        <div className="absolute top-6 right-6 md:top-8 md:right-10 font-mono2 text-[10px] tracking-[0.3em] text-[#8f8f8f] uppercase">
+        <div className="absolute top-6 right-6 md:top-8 md:right-10 font-mono2 text-[10px] tracking-[0.3em] text-[#79828D] uppercase">
           Udaipur — IN
         </div>
-        <div className="absolute bottom-6 left-6 md:bottom-8 md:left-10 font-mono2 text-[10px] tracking-[0.3em] text-[#8f8f8f] uppercase">
+        <div className="absolute bottom-6 left-6 md:bottom-8 md:left-10 font-mono2 text-[10px] tracking-[0.3em] text-[#79828D] uppercase">
           Loading Assets
         </div>
-        <div className="absolute bottom-6 right-6 md:bottom-8 md:right-10 font-mono2 text-[10px] tracking-[0.3em] uppercase text-[#5c9ead]">
+        <div className="absolute bottom-6 right-6 md:bottom-8 md:right-10 font-mono2 text-[10px] tracking-[0.3em] uppercase text-[#536C83]">
           {IDENTITY.role}
         </div>
 
@@ -72,17 +72,17 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
             initial={{ y: "110%" }}
             animate={{ y: 0 }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="font-display font-bold leading-none text-[26vw] md:text-[16vw] tracking-tighter text-[#ededed] tabular-nums"
+            className="font-display font-bold leading-none text-[26vw] md:text-[16vw] tracking-tighter text-[#E6E9ED] tabular-nums"
           >
             {String(count).padStart(3, "0")}
-            <span className="text-[#5c9ead]">%</span>
+            <span className="text-[#536C83]">%</span>
           </motion.div>
         </div>
 
         {/* progress hairline */}
         <div className="absolute bottom-[16vh] left-1/2 -translate-x-1/2 w-[min(420px,70vw)] h-px bg-white/10">
           <div
-            className="h-full bg-gradient-to-r from-[#5c9ead] to-[#ccff00] transition-[width] duration-100 ease-linear"
+            className="h-full bg-gradient-to-r from-[#536C83] to-[#ccff00] transition-[width] duration-100 ease-linear"
             style={{ width: `${count}%` }}
           />
         </div>

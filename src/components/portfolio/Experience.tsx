@@ -28,8 +28,8 @@ function ExperienceRow({
     <motion.div ref={rowRef} style={{ opacity: entryOpacity, x: entryX, willChange: "transform, opacity" }} className="relative">
       {/* timeline node */}
       <span aria-hidden="true" className="absolute -left-[29px] md:-left-[37px] top-9 hidden md:flex items-center justify-center w-[13px] h-[13px]">
-        <span className={`w-[5px] h-[5px] rounded-full ${exp.current ? "bg-[#ccff00]" : "bg-[#5c9ead]"}`} />
-        <span className="absolute inset-0 rounded-full border border-[#5c9ead]/35" />
+        <span className={`w-[5px] h-[5px] rounded-full ${exp.current ? "bg-[#ccff00]" : "bg-[#536C83]"}`} />
+        <span className="absolute inset-0 rounded-full border border-[#536C83]/35" />
       </span>
 
       <div className="border-t border-white/10 last:border-b">
@@ -40,12 +40,12 @@ function ExperienceRow({
           className="group w-full flex items-center justify-between gap-4 py-6 md:py-8 text-left"
         >
           <div className="flex items-baseline gap-4 md:gap-8 min-w-0">
-            <span className="font-mono2 text-[10px] text-[#5c9ead] shrink-0">
+            <span className="font-mono2 text-[10px] text-[#536C83] shrink-0">
               {String(index + 1).padStart(2, "0")}
             </span>
             <div className="min-w-0">
               <div className="flex items-center gap-3 flex-wrap">
-                <h3 className="font-display font-semibold text-xl md:text-3xl tracking-tight text-[#e8eaee] group-hover:translate-x-1 transition-transform duration-400">
+                <h3 className="font-display font-semibold text-xl md:text-3xl tracking-tight text-[#E6E9ED] group-hover:translate-x-1 transition-transform duration-400">
                   {exp.role}
                 </h3>
                 {exp.current && (
@@ -55,20 +55,20 @@ function ExperienceRow({
                   </span>
                 )}
               </div>
-              <p className="mt-1.5 font-mono2 text-[10px] md:text-[11px] tracking-[0.16em] uppercase text-[#8b94a0]">
+              <p className="mt-1.5 font-mono2 text-[10px] md:text-[11px] tracking-[0.16em] uppercase text-[#7E8994]">
                 {exp.company} · {exp.place}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-4 md:gap-8 shrink-0">
-            <span className="hidden sm:block font-mono2 text-[10px] tracking-[0.14em] uppercase text-[#a8b0bb]">
+            <span className="hidden sm:block font-mono2 text-[10px] tracking-[0.14em] uppercase text-[#A9B2BC]">
               {exp.period}
             </span>
             <span
               className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all duration-400 ${
                 open
-                  ? "border-[#5c9ead] bg-[#5c9ead] text-black rotate-45"
-                  : "border-white/20 text-white group-hover:border-[#5c9ead] group-hover:text-[#5c9ead]"
+                  ? "border-[#536C83] bg-[#536C83] text-black rotate-45"
+                  : "border-white/20 text-white group-hover:border-[#536C83] group-hover:text-[#536C83]"
               }`}
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
@@ -91,15 +91,15 @@ function ExperienceRow({
               <div className="pb-8 pl-8 md:pl-16 grid md:grid-cols-2 gap-6">
                 <ul className="space-y-3">
                   {exp.points.map((p) => (
-                    <li key={p} className="flex gap-3 text-sm leading-relaxed text-[#b3bac3]">
-                      <span className="mt-[7px] w-1 h-1 rounded-full bg-[#5c9ead] shrink-0" />
+                    <li key={p} className="flex gap-3 text-sm leading-relaxed text-[#B9C1CA]">
+                      <span className="mt-[7px] w-1 h-1 rounded-full bg-[#536C83] shrink-0" />
                       {p}
                     </li>
                   ))}
                 </ul>
                 <div className="md:text-right">
-                  <div className="font-mono2 text-[10px] tracking-[0.2em] uppercase text-[#8b94a0]">Period</div>
-                  <div className="mt-1 font-display text-lg text-[#e8eaee]">{exp.period}</div>
+                  <div className="font-mono2 text-[10px] tracking-[0.2em] uppercase text-[#7E8994]">Period</div>
+                  <div className="mt-1 font-display text-lg text-[#E6E9ED]">{exp.period}</div>
                 </div>
               </div>
             </motion.div>
@@ -123,9 +123,9 @@ export default function Experience() {
   const headY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
-    <section id="journey" className="relative px-5 md:px-10 py-24 md:py-36 bg-[#07090d] border-y border-white/[0.06] overflow-hidden">
+    <section id="journey" className="relative px-5 md:px-10 py-24 md:py-36 bg-[#0B0D10] border-y border-white/[0.06] overflow-hidden">
       {/* quiet atmosphere */}
-      <div aria-hidden="true" className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_45%_at_50%_62%,rgba(82,119,165,0.05),transparent_64%)]" />
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_45%_at_50%_62%,rgba(70, 88, 106,0.05),transparent_64%)]" />
 
       <div className="relative z-10 flex items-end justify-between mb-12 md:mb-16">
         <div>
@@ -140,7 +140,7 @@ export default function Experience() {
             Experience & <span className="text-stroke">Education</span>
           </motion.h2>
         </div>
-        <span className="hidden md:block font-mono2 text-[10px] tracking-[0.25em] uppercase text-[#8b94a0]">
+        <span className="hidden md:block font-mono2 text-[10px] tracking-[0.25em] uppercase text-[#7E8994]">
           (2022 — Present)
         </span>
       </div>
@@ -148,7 +148,7 @@ export default function Experience() {
       {/* experience — technical timeline */}
       <div className="relative z-10 grid lg:grid-cols-12 gap-12">
         <div className="lg:col-span-8">
-          <div className="mb-4 font-mono2 text-[10px] tracking-[0.26em] uppercase text-[#8b94a0]">
+          <div className="mb-4 font-mono2 text-[10px] tracking-[0.26em] uppercase text-[#7E8994]">
             / Work Experience
           </div>
           <div ref={spineRef} className="relative md:pl-10">
@@ -157,13 +157,13 @@ export default function Experience() {
             <motion.div
               aria-hidden="true"
               style={{ scaleY: spineScale, willChange: "transform" }}
-              className="absolute left-[5px] top-2 bottom-2 w-px hidden md:block origin-top bg-gradient-to-b from-[#5c9ead]/70 via-[#5277a5]/45 to-[#75658f]/25"
+              className="absolute left-[5px] top-2 bottom-2 w-px hidden md:block origin-top bg-gradient-to-b from-[#536C83]/70 via-[#46586A]/45 to-[#56606C]/25"
             />
             {/* reading head */}
             <motion.div
               aria-hidden="true"
               style={{ y: headY, willChange: "transform" }}
-              className="absolute left-[1.5px] top-2 w-[9px] h-[9px] -mt-[4px] rounded-full border border-[#ccff00] bg-[#050505] hidden md:block"
+              className="absolute left-[1.5px] top-2 w-[9px] h-[9px] -mt-[4px] rounded-full border border-[#ccff00] bg-[#08090B] hidden md:block"
             />
 
             {EXPERIENCE.map((exp, i) => (
@@ -180,7 +180,7 @@ export default function Experience() {
 
         {/* education */}
         <div className="lg:col-span-4">
-          <div className="mb-4 font-mono2 text-[10px] tracking-[0.26em] uppercase text-[#8b94a0]">
+          <div className="mb-4 font-mono2 text-[10px] tracking-[0.26em] uppercase text-[#7E8994]">
             / Education
           </div>
           <motion.div
@@ -193,16 +193,16 @@ export default function Experience() {
             {EDUCATION.map((e, i) => (
               <div
                 key={e.school}
-                className="group tech-ticks relative rounded-md border border-white/10 bg-[#0a0d12]/70 p-6 hover:border-[#5c9ead]/40 hover:-translate-y-1 transition-all duration-400"
+                className="group tech-ticks relative rounded-md border border-white/10 bg-[#10141A]/70 p-6 hover:border-[#536C83]/40 hover:-translate-y-1 transition-all duration-400"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <span className="font-mono2 text-[10px] text-[#5c9ead]">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="font-mono2 text-[10px] text-[#536C83]">{String(i + 1).padStart(2, "0")}</span>
                   {e.period && (
-                    <span className="font-mono2 text-[9px] tracking-[0.16em] uppercase text-[#8b94a0]">{e.period}</span>
+                    <span className="font-mono2 text-[9px] tracking-[0.16em] uppercase text-[#7E8994]">{e.period}</span>
                   )}
                 </div>
-                <h3 className="mt-4 font-display font-semibold text-lg md:text-xl tracking-tight text-[#e8eaee]">{e.school}</h3>
-                <p className="mt-1 text-sm text-[#9aa3af]">{e.degree}</p>
+                <h3 className="mt-4 font-display font-semibold text-lg md:text-xl tracking-tight text-[#E6E9ED]">{e.school}</h3>
+                <p className="mt-1 text-sm text-[#939DA8]">{e.degree}</p>
                 <div className="mt-4 flex items-center gap-2">
                   <div className="flex-1 h-px bg-white/10 relative overflow-hidden rounded-full">
                     <motion.div
@@ -210,10 +210,10 @@ export default function Experience() {
                       whileInView={{ width: e.score }}
                       viewport={{ once: true }}
                       transition={{ duration: 1.2, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                      className="absolute inset-y-0 left-0 bg-[#5c9ead]"
+                      className="absolute inset-y-0 left-0 bg-[#536C83]"
                     />
                   </div>
-                  <span className="font-mono2 text-[10px] text-[#5c9ead] tabular-nums">{e.score}</span>
+                  <span className="font-mono2 text-[10px] text-[#536C83] tabular-nums">{e.score}</span>
                 </div>
               </div>
             ))}

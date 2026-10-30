@@ -41,7 +41,7 @@ function Word({
   const opacity = useTransform(progress, range, [0.14, 1]);
   const isAccent = children === "Data" || children === "Engineer" || children === "pipelines";
   return (
-    <motion.span style={{ opacity }} className={isAccent ? "text-[#5c9ead]" : undefined}>
+    <motion.span style={{ opacity }} className={isAccent ? "text-[#536C83]" : undefined}>
       {children}{" "}
     </motion.span>
   );
@@ -51,11 +51,11 @@ function Stat({ value, suffix, label, active }: { value: number; suffix: string;
   const n = useCountUp(value, active);
   return (
     <div className="border-t border-white/10 pt-4">
-      <div className="font-display font-bold text-4xl md:text-5xl tracking-tight tabular-nums text-[#e8eaee]">
+      <div className="font-display font-bold text-4xl md:text-5xl tracking-tight tabular-nums text-[#E6E9ED]">
         {n}
-        <span className="text-[#5c9ead]">{suffix}</span>
+        <span className="text-[#536C83]">{suffix}</span>
       </div>
-      <div className="mt-1 font-mono2 text-[9.5px] tracking-[0.22em] uppercase text-[#8b94a0]">{label}</div>
+      <div className="mt-1 font-mono2 text-[9.5px] tracking-[0.22em] uppercase text-[#7E8994]">{label}</div>
     </div>
   );
 }
@@ -89,7 +89,7 @@ export default function About() {
         <CircuitFragment className="w-full h-full" opacity={0.13} />
       </motion.div>
       <motion.div aria-hidden="true" style={{ y: fragY2, willChange: "transform" }} className="absolute bottom-[8%] left-[2%] w-[300px] h-[200px] hidden lg:block opacity-50 pointer-events-none">
-        <CircuitFragment className="w-full h-full" opacity={0.1} color="rgba(117,101,143,1)" flip />
+        <CircuitFragment className="w-full h-full" opacity={0.1} color="rgba(86, 96, 108,1)" flip />
       </motion.div>
 
       {/* section header */}
@@ -106,7 +106,7 @@ export default function About() {
             Behind the <span className="text-stroke">pipelines</span>
           </motion.h2>
         </div>
-        <span className="hidden md:block font-mono2 text-[10px] tracking-[0.25em] uppercase text-[#8b94a0]">
+        <span className="hidden md:block font-mono2 text-[10px] tracking-[0.25em] uppercase text-[#7E8994]">
           (Who is Rohit)
         </span>
       </div>
@@ -120,7 +120,7 @@ export default function About() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.15 }}
-            className="mt-8 max-w-xl text-sm md:text-[15px] leading-relaxed text-[#9aa3af]"
+            className="mt-8 max-w-xl text-sm md:text-[15px] leading-relaxed text-[#939DA8]"
           >
             {ABOUT.secondary}
           </motion.p>
@@ -155,8 +155,8 @@ export default function About() {
             style={{ rotate: ringRotate, willChange: "transform" }}
             className="absolute -top-[13%] -right-[9%] w-[58%] opacity-35 z-0"
           >
-            <circle cx="100" cy="100" r="96" fill="none" stroke="rgba(92,158,173,0.25)" strokeWidth="0.5" strokeDasharray="2 5" />
-            <circle cx="100" cy="100" r="72" fill="none" stroke="rgba(117,101,143,0.3)" strokeWidth="0.5" />
+            <circle cx="100" cy="100" r="96" fill="none" stroke="rgba(83, 108, 131,0.25)" strokeWidth="0.5" strokeDasharray="2 5" />
+            <circle cx="100" cy="100" r="72" fill="none" stroke="rgba(86, 96, 108,0.3)" strokeWidth="0.5" />
             <line x1="100" y1="0" x2="100" y2="14" stroke="rgba(204,255,0,0.6)" strokeWidth="1" />
             <line x1="100" y1="186" x2="100" y2="200" stroke="rgba(204,255,0,0.6)" strokeWidth="1" />
           </motion.svg>
@@ -169,13 +169,13 @@ export default function About() {
             className="relative z-10"
           >
             {/* offset back plate — depth layer */}
-            <div aria-hidden="true" className="absolute inset-0 translate-x-3.5 translate-y-3.5 border border-[#5c9ead]/20 bg-[#5277a5]/[0.04] rounded-2xl pointer-events-none" />
+            <div aria-hidden="true" className="absolute inset-0 translate-x-3.5 translate-y-3.5 border border-[#536C83]/20 bg-[#46586A]/[0.04] rounded-2xl pointer-events-none" />
 
             <div
               ref={imgRef}
               onMouseMove={onImgMove}
               onMouseLeave={onImgLeave}
-              className="card-shine scanlines tech-ticks relative rounded-2xl border border-white/10 overflow-hidden bg-[#0a0d12] transition-transform duration-200 will-change-transform"
+              className="card-shine scanlines tech-ticks relative rounded-2xl border border-white/10 overflow-hidden bg-[#10141A] transition-transform duration-200 will-change-transform"
               data-cursor="Hello"
             >
               <img
@@ -185,7 +185,7 @@ export default function About() {
                 loading="lazy"
               />
               {/* metadata rail on image */}
-              <div className="absolute top-3 right-3 z-[2] text-right font-mono2 text-[8px] tracking-[0.2em] uppercase text-[#a8b0bb]/60 leading-[2.1]">
+              <div className="absolute top-3 right-3 z-[2] text-right font-mono2 text-[8px] tracking-[0.2em] uppercase text-[#A9B2BC]/60 leading-[2.1]">
                 <div>ROI — DATA</div>
                 <div>EXP — 1+ YRS</div>
                 <div className="text-[#ccff00]">STATUS — OPEN</div>
@@ -194,7 +194,7 @@ export default function About() {
                 <span className="font-mono2 text-[9px] tracking-[0.2em] uppercase text-white/85">
                   ROHIT_SUTHAR — 2025
                 </span>
-                <span className="font-mono2 text-[9px] tracking-[0.2em] uppercase text-[#5c9ead]">
+                <span className="font-mono2 text-[9px] tracking-[0.2em] uppercase text-[#536C83]">
                   Udaipur · IN
                 </span>
               </div>
@@ -204,7 +204,7 @@ export default function About() {
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -mt-16 md:-mt-20 ml-auto mr-4 w-fit flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[#0a0d12]/90 backdrop-blur-xl border border-white/12"
+              className="absolute -mt-16 md:-mt-20 ml-auto mr-4 w-fit flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[#10141A]/90 backdrop-blur-xl border border-white/12"
               style={{ float: "right" }}
             >
               <span className="w-2 h-2 rounded-full bg-[#ccff00] animate-pulse" />
@@ -214,14 +214,14 @@ export default function About() {
             </motion.div>
 
             {/* location strip under the frame */}
-            <div className="mt-[-14px] relative z-10 ml-0 md:ml-6 mr-0 md:mr-10 flex items-center justify-between px-4 py-3 rounded-md bg-[#0a0d12]/95 border border-white/[0.08]">
+            <div className="mt-[-14px] relative z-10 ml-0 md:ml-6 mr-0 md:mr-10 flex items-center justify-between px-4 py-3 rounded-md bg-[#10141A]/95 border border-white/[0.08]">
               <div>
-                <div className="font-mono2 text-[8px] tracking-[0.22em] uppercase text-[#8b94a0]">Based in</div>
+                <div className="font-mono2 text-[8px] tracking-[0.22em] uppercase text-[#7E8994]">Based in</div>
                 <div className="font-body text-[13px] text-white/85 mt-0.5">Udaipur, Rajasthan</div>
               </div>
               <div className="text-right">
-                <div className="font-mono2 text-[8px] tracking-[0.22em] uppercase text-[#8b94a0]">Role</div>
-                <div className="font-mono2 text-[10px] tracking-[0.1em] text-[#5c9ead] mt-0.5">DATA ENGINEER</div>
+                <div className="font-mono2 text-[8px] tracking-[0.22em] uppercase text-[#7E8994]">Role</div>
+                <div className="font-mono2 text-[10px] tracking-[0.1em] text-[#536C83] mt-0.5">DATA ENGINEER</div>
               </div>
             </div>
           </motion.div>

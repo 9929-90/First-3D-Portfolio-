@@ -333,7 +333,7 @@ export default function MusicPlayer() {
         onClick={toggle}
         data-cursor={playing ? "Pause" : "Play"}
         aria-label={playing ? "Pause background music" : "Play background music"}
-        className="group relative flex items-center gap-3 h-12 md:h-[52px] pl-2.5 pr-4 md:pl-3 md:pr-5 rounded-full border border-white/15 bg-[#0a0d12]/70 backdrop-blur-xl hover:border-[#5c9ead]/60 transition-colors duration-300"
+        className="group relative flex items-center gap-3 h-12 md:h-[52px] pl-2.5 pr-4 md:pl-3 md:pr-5 rounded-full border border-white/15 bg-[#10141A]/70 backdrop-blur-xl hover:border-[#536C83]/60 transition-colors duration-300"
       >
         {/* vinyl disc */}
         <span className="relative block w-8 h-8 md:w-9 md:h-9">

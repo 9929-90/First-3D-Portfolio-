@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Rohit Suthar" }],
   icons: {
-    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23050505'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23ccff00'/%3E%3C/svg%3E",
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2308090B'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23536C83'/%3E%3C/svg%3E",
   },
   openGraph: {
     title: "Rohit Suthar — Aspiring Data Engineer",
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#050505",
+  themeColor: "#08090B",
   width: "device-width",
   initialScale: 1,
 };
@@ -67,7 +67,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <body
-        className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased bg-[#050505] text-[#ededed]`}
+        className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased bg-[#08090B] text-[#E6E9ED]`}
       >
         {children}
       </body>

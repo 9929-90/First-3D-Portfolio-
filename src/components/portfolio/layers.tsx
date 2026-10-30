@@ -70,7 +70,7 @@ export function ContourField({
           fill="none"
           strokeWidth="1"
           stroke={
-            i % 3 === 0 ? "rgba(92,158,173,0.8)" : i % 3 === 1 ? "rgba(82,119,165,0.7)" : "rgba(117,101,143,0.7)"
+            i % 3 === 0 ? "rgba(83, 108, 131,0.8)" : i % 3 === 1 ? "rgba(70, 88, 106,0.7)" : "rgba(86, 96, 108,0.7)"
           }
         />
       ))}
@@ -100,7 +100,7 @@ export function GridBackdrop({ size = 84, opacity = 0.05 }: { size?: number; opa
 export function CircuitFragment({
   className,
   opacity = 0.14,
-  color = "rgba(92,158,173,1)",
+  color = "rgba(83, 108, 131,1)",
   flip = false,
 }: {
   className?: string;
@@ -129,7 +129,7 @@ export function CircuitFragment({
 /** Floating telemetry fragment — abstract system metrics. */
 export function TelemetryCard({
   lines,
-  accent = "#5c9ead",
+  accent = "#536C83",
   className,
 }: {
   lines: [string, string, string?][];
@@ -139,7 +139,7 @@ export function TelemetryCard({
   return (
     <div
       aria-hidden="true"
-      className={`tech-ticks absolute px-3 py-2.5 bg-[#0a0d12]/55 border border-[rgba(168,176,187,0.12)] rounded-sm font-mono2 text-[9px] leading-[1.9] tracking-[0.14em] pointer-events-none ${className ?? ""}`}
+      className={`tech-ticks absolute px-3 py-2.5 bg-[#10141A]/55 border border-[rgba(168,176,187,0.12)] rounded-sm font-mono2 text-[9px] leading-[1.9] tracking-[0.14em] pointer-events-none ${className ?? ""}`}
     >
       {lines.map(([k, v, c]) => (
         <div key={k} className="flex gap-2.5 justify-between min-w-[130px]">

@@ -4,7 +4,8 @@ import { useState } from "react";
 import Preloader from "@/components/portfolio/Preloader";
 import Cursor from "@/components/portfolio/Cursor";
 import Navbar from "@/components/portfolio/Navbar";
-import Hero from "@/components/portfolio/Hero";
+import RocketHero from "@/components/portfolio/RocketHero";
+import SectionIndicator from "@/components/portfolio/SectionIndicator";
 import Marquee from "@/components/portfolio/Marquee";
 import About from "@/components/portfolio/About";
 import Experience from "@/components/portfolio/Experience";
@@ -20,14 +21,15 @@ export default function Home() {
   useSmoothScroll();
 
   return (
-    <div className="grain relative min-h-screen bg-[#050505] text-[#ededed] selection:bg-[#ccff00] selection:text-black">
+    <div className="grain relative min-h-screen bg-[#08090B] text-[#E6E9ED] selection:bg-[#536C83] selection:text-white">
       <Preloader onDone={() => setReady(true)} />
       <Cursor />
       <Navbar />
+      <SectionIndicator />
       <MusicPlayer />
 
       <main>
-        <Hero ready={ready} />
+        <RocketHero ready={ready} />
         <Marquee />
         <About />
         <Experience />

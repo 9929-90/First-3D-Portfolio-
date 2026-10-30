@@ -3,22 +3,25 @@
 
 /* ═══════════════════════════════════════════════════════════════
    DESIGN TOKENS — cinematic technical system
-   Deep blacks, desaturated cyan / blue / violet, soft silver.
-   Lime (#CCFF00) is a detail accent, never a surface.
+   Deep black / graphite / dark metallic grey / muted steel /
+   restrained cool blue. Silver highlights. Lime (#CCFF00) survives
+   only as a micro detail accent (status dots, progress tip).
    ═══════════════════════════════════════════════════════════════ */
 :root {
-  --bg: #050505;
-  --bg-soft: #0a0d12;        /* charcoal */
-  --bg-raise: #171c24;       /* graphite */
-  --ink: #e8eaee;
-  --muted: #8b94a0;
-  --line: rgba(168, 176, 187, 0.1);
-  --accent: #ccff00;         /* used sparingly — status, ticks, active markers */
-  --cy: #5c9ead;             /* desaturated cyan — primary interaction tint */
-  --bl: #5277a5;             /* muted electric blue */
-  --vi: #75658f;             /* subtle violet */
-  --silver: #a8b0bb;
-  --accent-dim: rgba(92, 158, 173, 0.14);
+  --bg: #08090B;             /* deep black */
+  --bg-soft: #10141A;        /* surface above black */
+  --bg-raise: #121519;       /* graphite */
+  --metal: #252B31;          /* dark metallic grey */
+  --ink: #E6E9ED;
+  --muted: #7E8994;
+  --steel: #65717B;          /* muted steel — secondary labels */
+  --line: rgba(169, 178, 188, 0.1);
+  --accent: #ccff00;         /* micro detail accent — never a surface */
+  --cy: #536C83;             /* restrained cool blue — primary tint */
+  --bl: #46586A;             /* darker steel blue */
+  --vi: #56606C;             /* cool graphite-steel */
+  --silver: #A9B2BC;
+  --accent-dim: rgba(83, 108, 131, 0.14);
 }
 
 * {
@@ -45,7 +48,7 @@ body {
 }
 
 ::selection {
-  background: rgba(92, 158, 173, 0.32);
+  background: rgba(83, 108, 131, 0.32);
   color: #fff;
 }
 
@@ -55,14 +58,14 @@ body {
   height: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: #050505;
+  background: #08090B;
 }
 ::-webkit-scrollbar-thumb {
-  background: #232a33;
+  background: #242B33;
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #39424e;
+  background: #3A4550;
 }
 
 /* ---------- typography helpers ---------- */
@@ -74,15 +77,15 @@ body {
 }
 
 .text-stroke {
-  -webkit-text-stroke: 1.5px rgba(168, 176, 187, 0.55);
+  -webkit-text-stroke: 1.5px rgba(169, 178, 188, 0.55);
   color: transparent;
 }
 .text-stroke-accent {
-  -webkit-text-stroke: 1.5px rgba(92, 158, 173, 0.85);
+  -webkit-text-stroke: 1.5px rgba(83, 108, 131, 0.85);
   color: transparent;
 }
 .text-gradient-tech {
-  background: linear-gradient(100deg, #a8b0bb 0%, #5c9ead 52%, #5277a5 100%);
+  background: linear-gradient(100deg, #C9D1D9 0%, #8FA3B5 55%, #536C83 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -251,7 +254,7 @@ body {
   background: linear-gradient(
     105deg,
     transparent 42%,
-    rgba(200, 214, 224, 0.09) 50%,
+    rgba(198, 205, 212, 0.09) 50%,
     transparent 58%
   );
   transform: translateX(-120%);
@@ -281,6 +284,83 @@ body {
   display: inline-block;
 }
 
+/* ---------- segmented mission progress (fixed left rail) ---------- */
+.seg-rail {
+  position: fixed;
+  left: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9200;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+.seg-rail__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.seg-rail__bar {
+  width: 18px;
+  height: 2px;
+  background: rgba(169, 178, 188, 0.18);
+  transition: width 0.45s cubic-bezier(0.76, 0, 0.24, 1), background-color 0.45s;
+}
+.seg-rail__item.is-active .seg-rail__bar {
+  width: 34px;
+  background: #E6E9ED;
+}
+.seg-rail__item.is-done .seg-rail__bar {
+  background: rgba(83, 108, 131, 0.75);
+}
+.seg-rail__label {
+  font-family: var(--font-mono), monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(169, 178, 188, 0.45);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.35s, transform 0.35s, color 0.35s;
+  white-space: nowrap;
+}
+.seg-rail__item:hover .seg-rail__label {
+  opacity: 1;
+  transform: translateX(0);
+}
+@media (max-width: 1279px) {
+  .seg-rail {
+    display: none;
+  }
+}
+
+/* ---------- technical annotation (rocket phase labels) ---------- */
+.tech-anno {
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(169, 178, 188, 0.62);
+}
+.tech-anno__line {
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(83, 108, 131, 0.7), transparent);
+}
+
+/* ---------- hairline metadata panel ---------- */
+.meta-panel {
+  border: 1px solid rgba(169, 178, 188, 0.12);
+  background: rgba(18, 21, 25, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
 /* ---------- chip ---------- */
 .chip {
   display: inline-flex;
@@ -291,13 +371,13 @@ body {
   font-family: var(--font-mono), monospace;
   font-size: 10.5px;
   letter-spacing: 0.05em;
-  color: #b3bac3;
-  background: rgba(168, 176, 187, 0.03);
+  color: #B9C1CA;
+  background: rgba(169, 178, 188, 0.03);
   transition: border-color 0.3s, color 0.3s, background 0.3s;
 }
 .chip:hover {
-  border-color: rgba(92, 158, 173, 0.55);
-  color: #d7dde4;
+  border-color: rgba(83, 108, 131, 0.55);
+  color: #DCE1E6;
   background: var(--accent-dim);
 }
 .chip-lime {
@@ -324,5 +404,10 @@ body {
   .animate-scroll-line,
   .animate-ping-soft {
     animation: none !important;
+  }
+  /* scroll-driven transforms resolve to their final composition */
+  .scrub-fade {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
