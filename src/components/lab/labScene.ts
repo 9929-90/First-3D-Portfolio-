@@ -11,9 +11,10 @@ import {
    Contents
    · dark laboratory floor plate (procedural grid, repeating)
    · 8 holographic workstations — real project screenshot on a glass
-     hologram, edge frame, scanline overlay, status light (semantic:
-     lime live / orange wip / grey coming-soon), pedestal variant,
-     landing pad, fake contact shadow
+     hologram with softly rounded corners, matching rounded edge
+     frame, scanline overlay, status light (semantic: lime live /
+     orange wip / grey coming-soon), pedestal variant, landing pad,
+     fake contact shadow
    · corridor light columns + three wireframe survey shapes
    · floating dust — one Points cloud drifting through the corridor
    · restrained lighting: ambient + key + rim + 3 corridor points
@@ -27,6 +28,47 @@ export interface LabHandle {
   group: THREE.Group;
   update(dt: number, p: number, camera?: THREE.Camera): void;
   dispose(): void;
+}
+
+/* ── rounded-rectangle helpers — holographic screens get soft,
+   modern corners; screenshots and scanlines clip to the same shape ── */
+function roundedRectShape(w: number, h: number, r: number): THREE.Shape {
+  const s = new THREE.Shape();
+  const x = -w / 2, y = -h / 2;
+  s.moveTo(x + r, y);
+  s.lineTo(x + w - r, y);
+  s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + h - r);
+  s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h);
+  s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r);
+  s.quadraticCurveTo(x, y, x + r, y);
+  return s;
+}
+
+function roundedScreenGeometry(w: number, h: number, r: number): THREE.ShapeGeometry {
+  const g = new THREE.ShapeGeometry(roundedRectShape(w, h, r), 6);
+  /* normalize UVs from shape space to 0..1 so textures map like a plane */
+  const pos = g.attributes.position;
+  const uv = g.attributes.uv;
+  for (let i = 0; i < pos.count; i++) {
+    uv.setXY(i, pos.getX(i) / w + 0.5, pos.getY(i) / h + 0.5);
+  }
+  return g;
+}
+
+function roundedOutlineGeometry(w: number, h: number, r: number): THREE.BufferGeometry {
+  const pts = roundedRectShape(w, h, r).getPoints(6);
+  const arr = new Float32Array(pts.length * 3);
+  for (let i = 0; i < pts.length; i++) {
+    arr[i * 3] = pts[i].x;
+    arr[i * 3 + 1] = pts[i].y;
+    arr[i * 3 + 2] = 0;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.BufferAttribute(arr, 3));
+  return g;
 }
 
 const STATUS_COLOR: Record<string, number> = {
@@ -136,9 +178,9 @@ export function buildLab(
   }
 
   /* ── workstation shared geometry (3 screen sizes) ── */
-  const screenGeoByW = new Map<number, THREE.PlaneGeometry>();
+  const screenGeoByW = new Map<number, THREE.ShapeGeometry>();
   const glowGeoByW = new Map<number, THREE.PlaneGeometry>();
-  const edgeGeoByW = new Map<number, THREE.EdgesGeometry>();
+  const edgeGeoByW = new Map<number, THREE.BufferGeometry>();
   const slabGeo = track(new THREE.BoxGeometry(2.0, 0.42, 1.15));
   const stripGeo = track(new THREE.BoxGeometry(2.06, 0.02, 0.07));
   const pylonGeo = track(new THREE.CylinderGeometry(0.3, 0.38, 1.35, 20));
@@ -226,9 +268,10 @@ export function buildLab(
     const w = def.screenW;
     const h = w * 0.625;
     if (!screenGeoByW.has(w)) {
-      screenGeoByW.set(w, track(new THREE.PlaneGeometry(w, h)));
+      const r = w * 0.035; // subtle, modern corner radius
+      screenGeoByW.set(w, track(roundedScreenGeometry(w, h, r)));
       glowGeoByW.set(w, track(new THREE.PlaneGeometry(w * 1.42, h * 1.5)));
-      edgeGeoByW.set(w, track(new THREE.EdgesGeometry(new THREE.PlaneGeometry(w, h))));
+      edgeGeoByW.set(w, track(roundedOutlineGeometry(w, h, r)));
     }
 
     const screenGroup = new THREE.Group();
@@ -265,7 +308,7 @@ export function buildLab(
     const edgeMat = track(new THREE.LineBasicMaterial({
       color: def.accent, transparent: true, opacity: 0.3, depthWrite: false,
     }));
-    const edges = new THREE.LineSegments(edgeGeoByW.get(w)!, edgeMat);
+    const edges = new THREE.LineLoop(edgeGeoByW.get(w)!, edgeMat);
     edges.position.z = 0.014;
     screenGroup.add(edges);
 

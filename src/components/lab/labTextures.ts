@@ -36,6 +36,22 @@ export function disposeScreenTextures(texs: Map<number, THREE.Texture>) {
 }
 
 /* ── procedural fallback: a quiet dark-UI plate with the number ── */
+function roundRectPath(
+  ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number
+) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
 export function makeFallbackScreen(number: string, accent: string, W = 512, H = 320): THREE.CanvasTexture {
   const c = document.createElement("canvas");
   c.width = W;
@@ -45,13 +61,14 @@ export function makeFallbackScreen(number: string, accent: string, W = 512, H = 
   ctx.fillStyle = "#0E1218";
   ctx.fillRect(0, 0, W, H);
 
-  /* faint window chrome */
+  /* faint window chrome — rounded to match the screen corner radius */
   ctx.strokeStyle = "rgba(94,143,168,0.35)";
   ctx.lineWidth = 2;
-  ctx.strokeRect(10, 10, W - 20, H - 20);
+  roundRectPath(ctx, 10, 10, W - 20, H - 20, 18);
+  ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(10, 40);
-  ctx.lineTo(W - 10, 40);
+  ctx.moveTo(28, 40);
+  ctx.lineTo(W - 28, 40);
   ctx.stroke();
 
   /* data bars — abstract interface, no invented content */
