@@ -14,7 +14,7 @@ import { readableHex } from "./techIcons";
    · fresnel atmosphere shells (additive, backside)
    · ring systems on two planets (1D radial band texture)
    · central data-core + a single lime micro-satellite
-   · orbital rings (LineLoops) + faint constellation links
+   · orbital rings (LineLoops)
    · 3-layer star field + one distant spiral galaxy
    · low-opacity nebula sprites + near-camera dust
    · holographic SVG technology markers orbiting each planet
@@ -229,7 +229,7 @@ export function buildGalaxy(
     group.add(dust);
   }
 
-  /* ── orbital rings + constellation links ── */
+  /* ── orbital rings — the intentional design; no connector lines ── */
   const orbitMats: THREE.LineBasicMaterial[] = [];
   for (let i = 0; i < PLANETS.length; i++) {
     const o = PLANETS[i].look.orbit;
@@ -247,23 +247,6 @@ export function buildGalaxy(
     const line = new THREE.LineLoop(g, m);
     line.position.y = o.y;
     group.add(line);
-  }
-  /* connect consecutive planets — the travelled route */
-  {
-    const pts: number[] = [];
-    for (let i = 0; i < PLANETS.length; i++) {
-      const v = planetBasePosition(i);
-      pts.push(v.x, v.y, v.z);
-    }
-    const g = track(new THREE.BufferGeometry());
-    g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
-    const linkMat = track(new THREE.LineBasicMaterial({
-      color: 0x8fa3b5, transparent: true, opacity: 0, depthWrite: false,
-    }));
-    const link = new THREE.Line(g, linkMat);
-    orbitMats.push(linkMat);
-    link.userData.isLink = true;
-    group.add(link);
   }
 
   /* ── planets ── */
@@ -388,7 +371,7 @@ export function buildGalaxy(
           const m = q.material as THREE.MeshBasicMaterial;
           m.opacity += (targetO - m.opacity) * (1 - Math.exp(-d * 6));
           /* small screens sit further back (portrait dolly) — nudge badges up */
-          const sc = pl.def.look.radius * (0.6 + w * 0.12) * (isMobile ? 1.18 : 1);
+          const sc = pl.def.look.radius * (1.0 + w * 0.18) * (isMobile ? 1.15 : 1);
           q.scale.setScalar(sc);
           q.lookAt(_v.setFromMatrixPosition(camera.matrixWorld));
         }
@@ -406,11 +389,10 @@ export function buildGalaxy(
       const la = performance.now() * 0.0007;
       limeSat.position.set(Math.cos(la) * 0.95, Math.sin(la * 2) * 0.12, Math.sin(la) * 0.95);
 
-      /* orbit lines fade with the reveal, links stay fainter */
+      /* orbit lines fade with the reveal */
       orbitCurrent += (orbitTarget - orbitCurrent) * (1 - Math.exp(-d * 3.2));
       for (const m of orbitMats) {
-        const cap = m.userData.isLink ? 0.12 : 0.62;
-        m.opacity = orbitCurrent * cap;
+        m.opacity = orbitCurrent * 0.62;
       }
 
       /* nebula breathing */

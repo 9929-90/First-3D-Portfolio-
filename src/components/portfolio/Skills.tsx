@@ -81,7 +81,7 @@ function PlanetPanel({ planet }: { planet: PlanetDef }) {
             >
               <svg
                 viewBox={`0 0 ${def.vw} ${def.vh}`}
-                className="shrink-0 w-[26px] h-[26px] md:w-[34px] md:h-[34px]"
+                className="shrink-0 w-[38px] h-[38px] md:w-[52px] md:h-[52px]"
                 fill={col}
                 aria-hidden="true"
                 style={{ filter: `drop-shadow(0 0 6px ${col}59)` }}

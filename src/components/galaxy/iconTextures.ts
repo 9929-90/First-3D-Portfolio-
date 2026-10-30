@@ -4,10 +4,11 @@ import { TECH_ICONS, readableHex } from "./techIcons";
 /* ═══════════════════════════════════════════════════════════════
    HOLOGRAPHIC MARKER TEXTURES — official SVG paths rendered once
    onto crisp canvases (256px), used by the 3D orbiting markers.
-   The brand glyph fills ~70% of the badge (large + legible) on a
-   faint dark glass disc so it never washes out against planet
-   surfaces or star particles. DOM panels draw the same paths
-   inline as crisp SVG at any size.
+   Each logo's artwork bounds are measured (alpha scan) so internal
+   SVG whitespace is stripped and the glyph fills ~70% of the badge
+   — centered, contain-fit (never stretched) — on a faint dark
+   glass disc so it never washes out. DOM panels draw the same
+   paths inline as crisp SVG at any size.
    ═══════════════════════════════════════════════════════════════ */
 
 function svgToImage(path: string, vw: number, vh: number, color: string): Promise<HTMLImageElement> {
@@ -48,9 +49,39 @@ function drawMarker(img: HTMLImageElement, color: string, S = 256): HTMLCanvasEl
   ctx.beginPath();
   ctx.arc(S / 2, S / 2, S * 0.462, 0, Math.PI * 2);
   ctx.stroke();
-  /* the brand glyph — oversized for legibility at any camera distance */
-  const pad = S * 0.15;
-  ctx.drawImage(img, pad, pad, S - pad * 2, S - pad * 2);
+  /* the brand glyph — measured bounds, contain-fit, centered, LARGE.
+     Strips each logo's internal SVG whitespace so padded marks like
+     MySQL or Kafka render at their true visual size. */
+  const GLYPH = 0.7;
+  const tmp = document.createElement("canvas");
+  tmp.width = tmp.height = S;
+  const tctx = tmp.getContext("2d")!;
+  tctx.drawImage(img, 0, 0, S, S);
+  const data = tctx.getImageData(0, 0, S, S).data;
+  let minX = S, minY = S, maxX = -1, maxY = -1;
+  for (let y = 0; y < S; y++) {
+    const row = y * S * 4;
+    for (let x = 0; x < S; x++) {
+      if (data[row + x * 4 + 3] > 8) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (maxX > minX && maxY > minY) {
+    const bw = maxX - minX + 1;
+    const bh = maxY - minY + 1;
+    const s = Math.min((S * GLYPH) / bw, (S * GLYPH) / bh);
+    const dw = bw * s;
+    const dh = bh * s;
+    ctx.drawImage(tmp, minX, minY, bw, bh, (S - dw) / 2, (S - dh) / 2, dw, dh);
+  } else {
+    /* no measurable bounds — fallback to padded square draw */
+    const pad = S * 0.15;
+    ctx.drawImage(img, pad, pad, S - pad * 2, S - pad * 2);
+  }
   return c;
 }
 
