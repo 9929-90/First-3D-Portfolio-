@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { IDENTITY, SOCIALS } from "@/lib/data";
 import { useMagnetic, useLocalTimeIST, scrollToTop } from "./hooks";
+import SocialIcon from "./SocialIcon";
 
 const CTAScene = dynamic(() => import("./CTAScene"), { ssr: false });
 
@@ -82,10 +83,9 @@ export default function Contact() {
                   <span className="font-mono2 text-[9px] tracking-[0.2em] uppercase text-[#7E8994] group-hover:text-[#536C83] transition-colors">
                     {s.label}
                   </span>
-                  <svg className="text-[#7E8994] group-hover:text-[#536C83] group-hover:rotate-45 transition-all duration-300" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-                    <line x1="7" y1="17" x2="17" y2="7" />
-                    <polyline points="8 7 17 7 17 16" />
-                  </svg>
+                  <span className="text-[#7E8994] group-hover:text-[#536C83] group-hover:rotate-0 group-hover:scale-110 transition-all duration-300">
+                    <SocialIcon label={s.label} size={17} />
+                  </span>
                 </div>
                 <div className="mt-1.5 font-mono2 text-[10px] text-[#AFB6BE] truncate">{s.handle}</div>
               </motion.a>
@@ -93,11 +93,31 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* bottom bar */}
-        <div className="mt-20 pt-6 pb-20 md:pb-6 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="font-mono2 text-[9.5px] tracking-[0.2em] uppercase text-[#79828D]">
-            © 2025 {IDENTITY.name} — All rights reserved
-          </div>
+          {/* big credit */}
+          <motion.div
+            initial={{ opacity: 0, y: 48 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-20 md:mt-28 mb-10 md:mb-14 text-center select-none"
+            aria-label="Developed by Rohit"
+          >
+            <p className="font-display font-bold leading-[0.95] tracking-[-0.03em]">
+              <span className="block text-stroke text-[8vw] md:text-[3.4vw] tracking-[0.02em]">
+                DEVELOPED BY
+              </span>
+              <span className="block text-[17vw] md:text-[8.6vw] mt-1">
+                <span className="text-gradient-tech">ROHIT</span>
+                <span className="text-[#ccff00]">.</span>
+              </span>
+            </p>
+          </motion.div>
+
+          {/* bottom bar */}
+          <div className="mt-auto pt-6 pb-20 md:pb-6 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="font-mono2 text-[9.5px] tracking-[0.2em] uppercase text-[#79828D]">
+              {IDENTITY.name} — All rights reserved
+            </div>
 
           <div className="font-mono2 text-[9.5px] tracking-[0.2em] uppercase text-[#79828D] flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#ccff00] animate-pulse" />

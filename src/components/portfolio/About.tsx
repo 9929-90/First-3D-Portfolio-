@@ -192,7 +192,7 @@ export default function About() {
               </div>
               <div className="absolute inset-x-0 bottom-0 flex items-center justify-between px-4 py-3 bg-gradient-to-t from-black/85 to-transparent z-[2]">
                 <span className="font-mono2 text-[9px] tracking-[0.2em] uppercase text-white">
-                  ROHIT_SUTHAR — 2025
+                  ROHIT_SUTHAR
                 </span>
                 <span className="font-mono2 text-[9px] tracking-[0.2em] uppercase text-[#536C83]">
                   Udaipur · IN

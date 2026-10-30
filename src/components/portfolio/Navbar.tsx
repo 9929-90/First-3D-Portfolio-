@@ -44,11 +44,8 @@ export default function Navbar() {
             className="flex items-center gap-2 group"
             aria-label="Back to top"
           >
-            <span className="font-display font-bold text-lg tracking-tight">
-              RS<span className="text-[#ccff00]">.</span>
-            </span>
-            <span className="hidden sm:block font-mono2 text-[9px] tracking-[0.25em] uppercase text-[#79828D] group-hover:text-white transition-colors">
-              © 2025
+            <span className="font-display font-bold text-lg tracking-tight lowercase">
+              welcome
             </span>
           </button>
 
@@ -60,7 +57,6 @@ export default function Navbar() {
                   onClick={() => go(l.href)}
                   className="group relative font-mono2 text-[10.5px] tracking-[0.22em] uppercase text-[#AFB6BE] hover:text-white transition-colors py-2"
                 >
-                  <span className="text-[#536C83] mr-1 text-[8px] align-super">{l.index}</span>
                   {l.label}
                   <span className="absolute left-0 bottom-0 w-full h-px bg-[#536C83] scale-x-0 group-hover:scale-x-100 origin-right transition-transform duration-400 group-hover:origin-left" />
                 </button>
@@ -114,7 +110,6 @@ export default function Navbar() {
                 onClick={() => go(l.href)}
                 className="flex items-baseline gap-4 py-2 text-left"
               >
-                <span className="font-mono2 text-[10px] text-[#536C83]">{l.index}</span>
                 <span className="font-display font-bold text-[13vw] leading-[1.05] tracking-tight text-[#E6E9ED]">
                   {l.label}
                 </span>

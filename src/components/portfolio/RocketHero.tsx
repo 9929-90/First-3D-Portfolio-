@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { IDENTITY, SOCIALS } from "@/lib/data";
 import { scrollToSection, prefersReducedMotion } from "./hooks";
+import SocialIcon from "./SocialIcon";
 import type { StageProgress } from "@/components/rocket/RocketStage";
 
 const RocketStage = dynamic(() => import("@/components/rocket/RocketStage"), {
@@ -192,7 +193,6 @@ export default function RocketHero({ ready }: { ready: boolean }) {
       data-hero-fade
       className="relative z-10 flex justify-between px-5 md:px-10 pt-20 md:pt-24 font-mono2 text-[9px] md:text-[10px] tracking-[0.28em] uppercase text-[#7E8994]"
     >
-      <span>Portfolio © 2025</span>
       <span className="hidden md:inline">{IDENTITY.role}</span>
       <span className="text-right">Udaipur — India</span>
     </div>
@@ -232,16 +232,6 @@ export default function RocketHero({ ready }: { ready: boolean }) {
           className="absolute inset-0 z-10 flex flex-col justify-center px-5 md:px-10 pointer-events-none"
         >
           <div className="max-w-[560px]">
-            <div data-hero-rise className="flex items-center gap-3 mb-5">
-              <span className="relative flex w-2 h-2">
-                <span className="absolute inline-flex w-full h-full rounded-full bg-[#ccff00] animate-ping-soft" />
-                <span className="relative inline-flex w-2 h-2 rounded-full bg-[#ccff00]" />
-              </span>
-              <span className="font-mono2 text-[10px] tracking-[0.26em] uppercase text-[#A9B2BC]">
-                Open to opportunities
-              </span>
-            </div>
-
             <h1
               data-hero-rise
               className="font-display font-bold leading-[0.9] tracking-[-0.03em] select-none"
@@ -369,9 +359,9 @@ export default function RocketHero({ ready }: { ready: boolean }) {
                 rel="noopener noreferrer"
                 data-cursor={s.short}
                 aria-label={s.label}
-                className="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center font-mono2 text-[9px] tracking-wider text-[#A9B2BC] hover:border-[#536C83] hover:text-white hover:-translate-y-1 transition-all duration-300"
+                className="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center text-[#A9B2BC] hover:border-[#536C83] hover:text-white hover:-translate-y-1 transition-all duration-300"
               >
-                {s.short}
+                <SocialIcon label={s.label} size={15} />
               </a>
             ))}
             <span className="mx-1 hidden sm:block w-px h-6 bg-white/10" />

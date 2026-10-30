@@ -54,7 +54,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
       >
         {/* corner meta */}
         <div className="absolute top-6 left-6 md:top-8 md:left-10 font-mono2 text-[10px] tracking-[0.3em] text-[#79828D] uppercase">
-          Portfolio © 2025
+          Portfolio
         </div>
         <div className="absolute top-6 right-6 md:top-8 md:right-10 font-mono2 text-[10px] tracking-[0.3em] text-[#79828D] uppercase">
           Udaipur — IN
