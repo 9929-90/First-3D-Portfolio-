@@ -1,0 +1,889 @@
+     1→import { useState, useEffect } from 'react';
+     2→import { motion, AnimatePresence } from 'framer-motion';
+     3→import { Helmet } from 'react-helmet-async';
+     4→
+     5→// ─── DATA ─────────────────────────────────────────────────────────────────────
+     6→
+     7→const projects = [
+     8→  {
+     9→    id: 7,
+    10→    number: '01',
+    11→    status: 'live',
+    12→    title: 'Azure E-Commerce Pipeline',
+    13→    subtitle: 'Azure Data Engineering Pipeline',
+    14→    summary: 'End-to-end Azure ETL pipeline for e-commerce customer, product and order data',
+    15→    description:
+    16→      'Built an end-to-end Azure ETL pipeline to ingest, process, transform, and store e-commerce customer, product, and order data. Uses a Bronze-Silver-Gold architecture on Azure Blob Storage, Data Factory, and Databricks for organized, scalable processing.',
+    17→    url: 'https://9929-90.github.io/E-commerce-Analytics-Pipeline/',
+    18→    repo: 'https://github.com/9929-90/E-commerce-Analytics-Pipeline',
+    19→    image: '/databricks.png',
+    20→    tech: ['Azure Data Factory', 'Azure Blob Storage', 'Databricks', 'PySpark', 'SQL', 'Delta Lake'],
+    21→    highlights: [
+    22→      'Bronze-Silver-Gold architecture on Azure Blob Storage',
+    23→      'Azure Data Factory pipelines orchestrating ingestion and transformation stages',
+    24→      'PySpark joins, aggregations and window functions',
+    25→      'Data cleaning and validation for reliable datasets',
+    26→      'Optimized Delta Lake Gold tables for customer, product and sales analytics',
+    27→      'SQL + PySpark business-ready datasets and metrics',
+    28→      'Customer, product and order data processed end to end',
+    29→      'Live analytics dashboard',
+    30→    ],
+    31→    tag: 'Data Engineering',
+    32→  },
+    33→  {
+    34→    id: 8,
+    35→    number: '02',
+    36→    status: 'wip',
+    37→    title: 'UPI Transaction Monitor',
+    38→    subtitle: 'Real-Time Streaming Analytics Pipeline',
+    39→    summary: 'Kafka + Spark Structured Streaming pipeline that validates, routes and monitors UPI-style payment events in real time',
+    40→    description:
+    41→      'Built a real-time streaming data pipeline that ingests synthetic UPI transaction events through Apache Kafka and processes them continuously with PySpark Structured Streaming. Validates every record, quarantines invalid data, flags high-value transactions and detects repeated user activity with event-time sliding windows, with live metrics served to an HTML dashboard.',
+    42→    url: null,
+    43→    repo: 'https://github.com/9929-90/UPI-Transactions-Monitor',
+    44→    image: '/upi-monitor.png', // place your screenshot at public/upi-monitor.png
+    45→    tech: ['Apache Kafka', 'PySpark', 'Structured Streaming', 'Python', 'Parquet', 'Docker', 'pytest', 'HTML / JavaScript'],
+    46→    highlights: [
+    47→      'Kafka ingestion (3-partition topic, Dockerized broker)',
+    48→      'PySpark Structured Streaming micro-batch processing',
+    49→      'Validation layer with quarantine path for invalid records',
+    50→      'High-value transaction routing (INR 50,000+ threshold)',
+    51→      'Velocity detection with 1-min / 10-sec event-time sliding windows',
+    52→      'Watermarking and checkpointed state for reliable recovery',
+    53→      'Parquet outputs for normal, flagged and quarantined data',
+    54→      'Local API + live HTML dashboard, 32 automated pytest tests',
+    55→    ],
+    56→    tag: 'Data Engineering',
+    57→  },
+    58→  {
+    59→    id: 1,
+    60→    number: '03',
+    61→    status: 'live',
+    62→    title: 'AapnoKaam',
+    63→    subtitle: 'Local Skilled Workers Marketplace',
+    64→    summary: 'Full-stack service marketplace connecting consumers with local workers',
+    65→    description:
+    66→      'Built and deployed a full-stack service marketplace connecting consumers with local workers (plumbers, electricians, carpenters) using Java 17, Spring Boot 3, React (Vite), and PostgreSQL.',
+    67→    url: 'https://aapnokaam.netlify.app',
+    68→    image: '/aapnokaam.png', // place your screenshot at public/images/aapnokaam.png
+    69→    tech: ['Java 17', 'Spring Boot 3', 'React', 'Vite', 'PostgreSQL', 'WebSocket', 'Razorpay', 'JWT'],
+    70→    highlights: [
+    71→      'JWT + Spring Security & Google OAuth2',
+    72→      'Booking lifecycle state machine',
+    73→      'Haversine location-based worker search',
+    74→      'Real-time chat via WebSocket (STOMP)',
+    75→      'Razorpay payment + HMAC verification',
+    76→      'Admin dashboard & worker approval flow',
+    77→      'Email notifications & file uploads',
+    78→      'Reviews, ratings & admin panel',
+    79→    ],
+    80→    tag: 'Java Full-Stack',
+    81→  },
+    82→  {
+    83→    id: 2,
+    84→    number: '04',
+    85→    status: 'live',
+    86→    title: 'SQLPilot',
+    87→    subtitle: 'AI SQL Query Generator',
+    88→    summary: 'AI-powered platform that converts natural language into SQL queries with execution support',
+    89→    description:
+    90→      'Built and deployed a full-stack AI SQL query generation platform using Spring Boot 3.4.5 (Java 21), React 18 (Vite), PostgreSQL (Neon), and Redis. Deployed via Docker → GitHub → Render (backend) + Netlify (frontend).',
+    91→    url: 'https://sqlpilott.netlify.app',
+    92→    image: '/sqlpilot.png',
+    93→    tech: ['Java 21', 'Spring Boot 3.4.5', 'React 18', 'Vite', 'PostgreSQL', 'Redis', 'Gemini AI', 'Docker', 'JWT'],
+    94→    highlights: [
+    95→      'JWT auth with BCrypt & role-based access (USER / ADMIN)',
+    96→      'Project & DB schema management with JSON upload',
+    97→      'Visual table preview for uploaded schemas',
+    98→      'Natural language → Gemini AI → SQL with explanation',
+    99→      'Auto LIMIT 100 & blocks destructive queries',
+   100→      'Execute SQL against connected DB with table results',
+   101→      'Paginated query history with expandable SQL view',
+   102→      'Admin dashboard with area/bar/pie charts & user management',
+   103→    ],
+   104→    tag: 'AI Full-Stack',
+   105→  },
+   106→  {
+   107→    id: 3,
+   108→    number: '05',
+   109→    status: 'coming-soon',
+   110→    title: 'OpsSafe',
+   111→    subtitle: 'AI Automation Monitoring SaaS',
+   112→    summary: 'Real-time monitoring platform for n8n workflows, APIs, and automation scripts',
+   113→    description:
+   114→      'Designed and developed a full-stack SaaS platform that monitors automation workflows in real time — detecting failures, delays, missed runs, and data issues before they impact the business. Built with Java 21, Spring Boot 3.3, PostgreSQL, and React.js.',
+   115→    url: '',
+   116→    image: '/opssafe.png',
+   117→    tech: ['React.js', 'Java 21', 'Spring Boot', 'PostgreSQL', 'Spring Security', 'JWT', 'Stripe', 'Micrometer', 'Prometheus', 'Flyway', 'Caffeine', 'ShedLock', 'WebFlux', 'Hibernate'],
+   118→    highlights: [
+   119→      'Custom Rule Engine — TIME / STATUS / DATA conditions with JSONPath extractor',
+   120→      'Distributed SLA detection via ShedLock (cluster-safe scheduled jobs)',
+   121→      'Dual auth: JWT for users + API Key filter for n8n webhook integrations',
+   122→      'Async alert dispatch with bounded ThreadPoolTaskExecutor',
+   123→      'Observability stack — Spring Actuator + Micrometer + Prometheus metrics',
+   124→      'Multi-tenant org model with RBAC, invite flows, and audit logs',
+   125→      'Stripe billing integration with webhook signature verification',
+   126→      'JSONB output validation via Hypersistence Utils + Hibernate 6',
+   127→    ],
+   128→    tag: 'Full Stack',
+   129→  },
+   130→  {
+   131→    id: 4,
+   132→    number: '06',
+   133→    status: 'live',
+   134→    title: "Rohit's Foundation",
+   135→    subtitle: 'Blog Publishing Platform',
+   136→    summary: 'Blog platform with admin and user roles',
+   137→    description:
+   138→      'A blog posting platform with distinct admin and user roles, built using React, Java Spring Boot, Tailwind CSS, and Framer Motion.',
+   139→    url: 'https://rohitsfoundation.netlify.app',
+   140→    image: '/rohitsfoundation.png',
+   141→    tech: ['React', 'Spring Boot', 'Tailwind CSS', 'Framer Motion', 'Java'],
+   142→    highlights: [
+   143→      'Role-based access (Admin & User)',
+   144→      'Blog post creation & management',
+   145→      'Rich content editor',
+   146→      'Framer Motion page transitions',
+   147→      'Responsive design',
+   148→      'Admin content moderation',
+   149→    ],
+   150→    tag: 'Full-Stack',
+   151→  },
+   152→  {
+   153→    id: 5,
+   154→    number: '07',
+   155→    status: 'wip',
+   156→    title: 'DeepVision AI',
+   157→    subtitle: 'AI-Powered Surveillance Platform',
+   158→    summary: 'Production-grade real-time computer vision platform for object detection, tracking, and intelligent alerting',
+   159→    description:
+   160→      'Built a production-grade real-time computer vision surveillance system using Python, FastAPI, YOLOv8, and PostgreSQL. Supports up to 16 concurrent RTSP/webcam streams with persistent object tracking, configurable alert zones, and a full REST API.',
+   161→    url: null,
+   162→    image: '/images/deepvision.png',
+   163→    tech: ['Python', 'FastAPI', 'YOLOv8', 'PostgreSQL', 'Redis', 'Docker', 'CUDA', 'Prometheus', 'Grafana', 'SQLAlchemy'],
+   164→    highlights: [
+   165→      'Up to 16 concurrent RTSP / webcam streams',
+   166→      'YOLOv8 object detection — 80 classes',
+   167→      'SORT tracking with Kalman filter + Hungarian algorithm',
+   168→      'Intrusion zones, people counting & loitering detection',
+   169→      'Email (SMTP) + Webhook alerts with retry & cooldown',
+   170→      'FastAPI async REST API with OpenAPI docs',
+   171→      'Server-Sent Events + MJPEG live debug streams',
+   172→      'Redis pub/sub result caching & rate-limiting',
+   173→    ],
+   174→    tag: 'AI / CV',
+   175→  },
+   176→  {
+   177→    id: 6,
+   178→    number: '08',
+   179→    status: 'live',
+   180→    title: 'Pinora',
+   181→    subtitle: 'Secure Credentials Vault App',
+   182→    summary: 'Secure credential manager with JWT authentication and vault-based password protection',
+   183→    description:
+   184→      'Built a full-stack secure credentials vault application using Spring Boot and React Native (Expo). The system implements JWT-based authentication with a vault PIN layer for protected access to stored passwords.',
+   185→    url: 'https://pinorabyrohit.netlify.app/',
+   186→    image: '/pinora.png',
+   187→    tech: ['Spring Boot', 'React Native', 'Expo', 'JWT', 'REST APIs', 'PostgreSQL'],
+   188→    highlights: [
+   189→      'JWT-based authentication system for secure user sessions',
+   190→      'Vault PIN protection layer for sensitive credential access',
+   191→      'Store and manage credentials with custom labels',
+   192→      'Secure retrieval flow: Enter vault PIN → decrypt and access data',
+   193→      'One-click copy functionality for passwords',
+   194→      'RESTful backend APIs built with Spring Boot',
+   195→      'Cross-platform mobile app built using React Native (Expo)',
+   196→      'Optimised UX flow for fast credential retrieval',
+   197→    ],
+   198→    tag: 'Full Stack / Security',
+   199→  },
+   200→];
+   201→
+   202→const statusConfig = {
+   203→  live:          { label: 'Live',         color: '#4ade80' },
+   204→  wip:           { label: 'Not Deployed', color: '#fbbf24' },
+   205→  'coming-soon': { label: 'Coming Soon',  color: '#60a5fa' },
+   206→};
+   207→
+   208→// ─── RIGHT PANEL — IMAGE PREVIEW ──────────────────────────────────────────────
+   209→
+   210→const RightPanel = ({ project }) => {
+   211→  const st = statusConfig[project.status] || { label: 'Unknown', color: '#888' };
+   212→  const [imgError, setImgError] = useState(false);
+   213→
+   214→  return (
+   215→    <motion.div
+   216→      key={project.id}
+   217→      initial={{ opacity: 0, x: 28 }}
+   218→      animate={{ opacity: 1, x: 0 }}
+   219→      exit={{ opacity: 0, x: 28 }}
+   220→      transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+   221→      style={{
+   222→        width: '100%',
+   223→        background: 'rgba(255,255,255,0.024)',
+   224→        border: '1px solid rgba(255,255,255,0.07)',
+   225→        overflow: 'hidden',
+   226→        display: 'flex',
+   227→        flexDirection: 'column',
+   228→        minHeight: '350px',
+   229→        position: 'relative',
+   230→      }}
+   231→    >
+   232→      {/* Watermark number */}
+   233→      <div style={{
+   234→        position: 'absolute',
+   235→        top: '-0.5rem',
+   236→        right: '1rem',
+   237→        fontSize: '8rem',
+   238→        fontWeight: 800,
+   239→        fontFamily: "'Open Sans', sans-serif",
+   240→        color: 'rgba(255,255,255,0.03)',
+   241→        lineHeight: 1,
+   242→        userSelect: 'none',
+   243→        letterSpacing: '-0.05em',
+   244→        zIndex: 0,
+   245→        pointerEvents: 'none',
+   246→      }}>
+   247→        {project.number}
+   248→      </div>
+   249→
+   250→      {/* Image area */}
+   251→      <div style={{
+   252→        position: 'relative',
+   253→        width: '100%',
+   254→        aspectRatio: '16/9',
+   255→        overflow: 'hidden',
+   256→        background: '#111',
+   257→        flexShrink: 0,
+   258→      }}>
+   259→        {!imgError ? (
+   260→          <img
+   261→            src={project.image}
+   262→            alt={`${project.title} screenshot`}
+   263→            onError={() => setImgError(true)}
+   264→            style={{
+   265→              width: '100%',
+   266→              height: '100%',
+   267→              objectFit: 'cover',
+   268→              objectPosition: 'top',
+   269→              display: 'block',
+   270→              transition: 'transform 0.6s ease',
+   271→            }}
+   272→            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
+   273→            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+   274→          />
+   275→        ) : (
+   276→          /* Fallback placeholder when image not found */
+   277→          <div style={{
+   278→            width: '100%',
+   279→            height: '100%',
+   280→            display: 'flex',
+   281→            flexDirection: 'column',
+   282→            alignItems: 'center',
+   283→            justifyContent: 'center',
+   284→            gap: '0.75rem',
+   285→            background: 'linear-gradient(135deg, #111 0%, #1a1a1a 100%)',
+   286→          }}>
+   287→            <div style={{
+   288→              display: 'grid',
+   289→              gridTemplateColumns: 'repeat(6, 1fr)',
+   290→              gap: '10px',
+   291→              opacity: 0.15,
+   292→            }}>
+   293→              {Array.from({ length: 24 }).map((_, i) => (
+   294→                <div key={i} style={{
+   295→                  width: '3px', height: '3px', borderRadius: '50%', background: '#fff',
+   296→                }} />
+   297→              ))}
+   298→            </div>
+   299→            <span style={{
+   300→              fontFamily: 'monospace', fontSize: '0.68rem',
+   301→              color: 'rgba(255,255,255,0.18)', letterSpacing: '0.2em',
+   302→              textTransform: 'uppercase',
+   303→            }}>
+   304→              {project.title}
+   305→            </span>
+   306→          </div>
+   307→        )}
+   308→
+   309→        {/* Gradient overlay at bottom of image */}
+   310→        <div style={{
+   311→          position: 'absolute',
+   312→          bottom: 0, left: 0, right: 0,
+   313→          height: '60px',
+   314→          background: 'linear-gradient(to bottom, transparent, rgba(10,10,10,0.9))',
+   315→          pointerEvents: 'none',
+   316→        }} />
+   317→
+   318→        {/* Status badge over image */}
+   319→        <div style={{
+   320→          position: 'absolute',
+   321→          top: '0.75rem',
+   322→          left: '0.75rem',
+   323→          display: 'inline-flex',
+   324→          alignItems: 'center',
+   325→          gap: '0.4rem',
+   326→          fontSize: '0.68rem',
+   327→          letterSpacing: '0.16em',
+   328→          textTransform: 'uppercase',
+   329→          fontFamily: 'monospace',
+   330→          color: st.color,
+   331→          background: 'rgba(10,10,10,0.8)',
+   332→          border: `1px solid ${st.color}44`,
+   333→          padding: '4px 10px',
+   334→          backdropFilter: 'blur(4px)',
+   335→        }}>
+   336→          <span style={{
+   337→            width: '5px', height: '5px', borderRadius: '50%',
+   338→            background: st.color, boxShadow: `0 0 6px ${st.color}`,
+   339→          }} />
+   340→          {st.label}
+   341→        </div>
+   342→
+   343→        {/* Tag badge */}
+   344→        <div style={{
+   345→          position: 'absolute',
+   346→          top: '0.75rem',
+   347→          right: '0.75rem',
+   348→          fontSize: '0.65rem',
+   349→          letterSpacing: '0.2em',
+   350→          textTransform: 'uppercase',
+   351→          fontFamily: 'monospace',
+   352→          color: '#888',
+   353→          background: 'rgba(10,10,10,0.8)',
+   354→          border: '1px solid rgba(255,255,255,0.1)',
+   355→          padding: '4px 10px',
+   356→          backdropFilter: 'blur(4px)',
+   357→        }}>
+   358→          {project.tag}
+   359→        </div>
+   360→      </div>
+   361→
+   362→      {/* Bottom info strip */}
+   363→      <div style={{
+   364→        padding: '1.25rem 1.5rem 1.5rem',
+   365→        display: 'flex',
+   366→        flexDirection: 'column',
+   367→        gap: '1rem',
+   368→        flex: 1,
+   369→        position: 'relative',
+   370→        zIndex: 1,
+   371→      }}>
+   372→        {/* Title + subtitle */}
+   373→        <div>
+   374→          <h3 style={{
+   375→            margin: '0 0 0.25rem',
+   376→            fontSize: '1.1rem',
+   377→            fontWeight: 400,
+   378→            color: '#fff',
+   379→            fontFamily: "'Open Sans', sans-serif",
+   380→            letterSpacing: '-0.01em',
+   381→          }}>
+   382→            {project.title}
+   383→          </h3>
+   384→          <p style={{
+   385→            margin: 0,
+   386→            fontSize: '0.78rem',
+   387→            color: '#555',
+   388→            fontFamily: 'monospace',
+   389→            letterSpacing: '0.06em',
+   390→          }}>
+   391→            {project.subtitle}
+   392→          </p>
+   393→        </div>
+   394→
+   395→        {/* Visit link */}
+   396→        {project.url && (
+   397→          <a
+   398→            href={project.url}
+   399→            target="_blank"
+   400→            rel="noopener noreferrer"
+   401→            style={{
+   402→              display: 'inline-flex',
+   403→              alignItems: 'center',
+   404→              gap: '0.4rem',
+   405→              padding: '0.55rem 1.2rem',
+   406→              border: '1px solid rgba(255,255,255,0.18)',
+   407→              color: '#fff',
+   408→              textDecoration: 'none',
+   409→              fontSize: '0.78rem',
+   410→              fontFamily: 'monospace',
+   411→              letterSpacing: '0.12em',
+   412→              transition: 'border-color 0.2s, background 0.2s',
+   413→              alignSelf: 'flex-start',
+   414→              marginTop: 'auto',
+   415→            }}
+   416→            onMouseEnter={e => {
+   417→              e.currentTarget.style.borderColor = '#ff3333';
+   418→              e.currentTarget.style.background = 'rgba(255,51,51,0.08)';
+   419→            }}
+   420→            onMouseLeave={e => {
+   421→              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)';
+   422→              e.currentTarget.style.background = 'transparent';
+   423→            }}
+   424→          >
+   425→            
+   426→          </a>
+   427→        )}
+   428→      </div>
+   429→    </motion.div>
+   430→  );
+   431→};
+   432→
+   433→// ─── MAIN ─────────────────────────────────────────────────────────────────────
+   434→
+   435→export default function Projects() {
+   436→  const [selected, setSelected] = useState(null);
+   437→  const [isMobile, setIsMobile] = useState(false);
+   438→
+   439→  useEffect(() => {
+   440→    const check = () => setIsMobile(window.innerWidth < 900);
+   441→    check();
+   442→    window.addEventListener('resize', check);
+   443→    return () => window.removeEventListener('resize', check);
+   444→  }, []);
+   445→
+   446→  const hasSelection = selected !== null;
+   447→  const activeProject = hasSelection ? projects[selected] : null;
+   448→
+   449→  const toggle = (i) => setSelected(prev => (prev === i ? null : i));
+   450→
+   451→  return (
+   452→    <section style={{
+   453→      minHeight: '100vh',
+   454→      width: '100%',
+   455→      background: '#0a0a0a',
+   456→      color: '#fff',
+   457→      fontFamily: "'Open Sans', sans-serif",
+   458→      boxSizing: 'border-box',
+   459→      overflowX: 'hidden',
+   460→    }}>
+   461→      <Helmet>
+   462→        <title>Projects | Rohit Suthar</title>
+   463→        <meta name="description" content="Explore projects built by Rohit Suthar — an Azure data engineering pipeline plus full-stack and AI applications." />
+   464→      </Helmet>
+   465→
+   466→      <style>{`
+   467→        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@200;300;400;500;600&display=swap');
+   468→        *, *::before, *::after { box-sizing: border-box; }
+   469→        body { margin: 0; background: #0a0a0a; }
+   470→        ::selection { background: rgba(255,51,51,0.25); }
+   471→        ::-webkit-scrollbar { width: 3px; }
+   472→        ::-webkit-scrollbar-track { background: #0a0a0a; }
+   473→        ::-webkit-scrollbar-thumb { background: #222; border-radius: 2px; }
+   474→
+   475→        .proj-title-row {
+   476→          display: flex;
+   477→          align-items: center;
+   478→          justify-content: space-between;
+   479→          padding: 1.6rem 0;
+   480→          cursor: pointer;
+   481→          border-bottom: 1px solid rgba(255,255,255,0.06);
+   482→          gap: 1rem;
+   483→          transition: border-color 0.3s;
+   484→        }
+   485→        .proj-title-row:hover .proj-title-text {
+   486→          color: #fff !important;
+   487→        }
+   488→        .proj-close-btn {
+   489→          width: 2.2rem; height: 2.2rem;
+   490→          border: 1px solid rgba(255,255,255,0.2);
+   491→          background: transparent;
+   492→          color: rgba(255,255,255,0.7);
+   493→          font-size: 1.4rem;
+   494→          cursor: pointer;
+   495→          display: flex; align-items: center; justify-content: center;
+   496→          transition: border-color 0.2s, color 0.2s, background 0.2s;
+   497→          flex-shrink: 0;
+   498→          line-height: 1;
+   499→        }
+   500→        .proj-close-btn:hover {
+   501→          border-color: #ff3333;
+   502→          color: #ff3333;
+   503→          background: rgba(255,51,51,0.08);
+   504→        }
+   505→        @keyframes fade-up {
+   506→          from { opacity: 0; transform: translateY(12px); }
+   507→          to   { opacity: 1; transform: translateY(0); }
+   508→        }
+   509→      `}</style>
+   510→
+   511→      <div style={{
+   512→        maxWidth: '1280px',
+   513→        margin: '0 auto',
+   514→        padding: isMobile ? '1.5rem 1.25rem 4rem' : '2.5rem 3rem 5rem',
+   515→      }}>
+   516→
+   517→        {/* Back */}
+   518→        <motion.a
+   519→          href="/"
+   520→          whileHover={{ x: -3 }}
+   521→          style={{
+   522→            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+   523→            marginBottom: '2rem',
+   524→            color: 'rgba(255,255,255,0.38)', textDecoration: 'none',
+   525→            fontSize: '0.82rem', fontFamily: 'monospace', letterSpacing: '0.14em',
+   526→            transition: 'color 0.2s',
+   527→          }}
+   528→          onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+   529→          onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.38)'}
+   530→        >
+   531→          ← Back to Home
+   532→        </motion.a>
+   533→
+   534→        {/* Notice banner */}
+   535→        <div style={{
+   536→          marginBottom: '2.5rem',
+   537→          padding: '0.85rem 1.1rem',
+   538→          background: 'rgba(251,191,36,0.05)',
+   539→          border: '1px solid rgba(251,191,36,0.2)',
+   540→          display: 'flex', alignItems: 'flex-start', gap: '0.65rem',
+   541→        }}>
+   542→          <span style={{ fontSize: '0.9rem', flexShrink: 0, marginTop: '1px' }}>⚠️</span>
+   543→          <p style={{
+   544→            margin: 0, fontSize: '0.82rem', color: 'rgba(212,168,67,0.85)',
+   545→            fontFamily: "'Open Sans', sans-serif", lineHeight: 1.6,
+   546→          }}>
+   547→            <strong style={{ color: '#fbbf24' }}>Heads up!</strong> Backend servers on Render's free tier may take{' '}
+   548→            <strong style={{ color: '#fbbf24' }}>5–10 min to cold-start</strong> on first load. <strong style={{ color: '#fbbf24' }}>DeepVision AI</strong> is not deployed yet.
+   549→          </p>
+   550→        </div>
+   551→
+   552→        {/* Header */}
+   553→        <div style={{ marginBottom: isMobile ? '1.5rem' : '2rem' }}>
+   554→          <div style={{
+   555→            fontSize: '0.72rem', letterSpacing: '0.32em', textTransform: 'uppercase',
+   556→            color: '#555', fontFamily: 'monospace',
+   557→          }}>
+   558→            Selected Work — {String(projects.length).padStart(2, '0')} Projects
+   559→          </div>
+   560→        </div>
+   561→
+   562→        {/* ── Two-column layout ── */}
+   563→        <div style={{
+   564→          display: 'flex',
+   565→          gap: isMobile ? 0 : '4rem',
+   566→          alignItems: 'flex-start',
+   567→        }}>
+   568→
+   569→          {/* LEFT: title list */}
+   570→          <div style={{ flex: isMobile ? '1' : '0 0 54%', minWidth: 0 }}>
+   571→            {projects.map((proj, i) => {
+   572→              const isActive  = selected === i;
+   573→              const isDimmed  = hasSelection && !isActive;
+   574→              const st        = statusConfig[proj.status] || { label: 'Unknown', color: '#888' };
+   575→
+   576→              return (
+   577→                <div key={proj.id}>
+   578→                  {/* ── Title row ── */}
+   579→                  <div
+   580→                    className="proj-title-row"
+   581→                    onClick={() => toggle(i)}
+   582→                    style={{
+   583→                      opacity: isDimmed ? 0.07 : 1,
+   584→                      transition: 'opacity 0.5s ease',
+   585→                      pointerEvents: isDimmed ? 'none' : 'auto',
+   586→                      borderBottomColor: isActive ? 'rgba(255,51,51,0.2)' : 'rgba(255,255,255,0.06)',
+   587→                    }}
+   588→                  >
+   589→                    <div style={{
+   590→                      display: 'flex', alignItems: 'baseline',
+   591→                      gap: isMobile ? '0.85rem' : '1.25rem',
+   592→                      minWidth: 0,
+   593→                    }}>
+   594→                      {/* Number */}
+   595→                      <span style={{
+   596→                        fontFamily: 'monospace', fontSize: '0.72rem',
+   597→                        color: isActive ? '#ff3333' : '#444',
+   598→                        letterSpacing: '0.08em', flexShrink: 0,
+   599→                        transition: 'color 0.3s',
+   600→                      }}>
+   601→                        {proj.number}
+   602→                      </span>
+   603→
+   604→                      {/* Title — reduced by 8px from original clamp values */}
+   605→                      <h2
+   606→                        className="proj-title-text"
+   607→                        style={{
+   608→                          margin: 0,
+   609→                          fontSize: isMobile
+   610→                            ? 'clamp(1.5rem, 7.5vw, 2.7rem)'   /* was clamp(2rem, 9vw, 3.2rem) */
+   611→                            : 'clamp(2.1rem, 3.6vw, 4.7rem)',   /* was clamp(2.6rem, 4.2vw, 5.2rem) */
+   612→                          fontWeight: 300,
+   613→                          letterSpacing: '-0.02em',
+   614→                          lineHeight: 1.05,
+   615→                          color: isActive ? '#fff' : 'rgba(255,255,255,0.78)',
+   616→                          fontFamily: "'Open Sans', sans-serif",
+   617→                          transition: 'color 0.3s',
+   618→                          whiteSpace: 'nowrap',
+   619→                          overflow: 'hidden',
+   620→                          textOverflow: 'ellipsis',
+   621→                        }}
+   622→                      >
+   623→                        {proj.title}
+   624→                      </h2>
+   625→
+   626→                      {/* Status badge — shown when active */}
+   627→                      {isActive && (
+   628→                        <motion.span
+   629→                          initial={{ opacity: 0, x: -8 }}
+   630→                          animate={{ opacity: 1, x: 0 }}
+   631→                          style={{
+   632→                            display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+   633→                            fontSize: '0.68rem', letterSpacing: '0.16em', textTransform: 'uppercase',
+   634→                            fontFamily: 'monospace', color: st.color,
+   635→                            border: `1px solid ${st.color}33`,
+   636→                            padding: '3px 9px',
+   637→                            flexShrink: 0,
+   638→                            whiteSpace: 'nowrap',
+   639→                          }}
+   640→                        >
+   641→                          <span style={{
+   642→                            width: '5px', height: '5px', borderRadius: '50%',
+   643→                            background: st.color, boxShadow: `0 0 6px ${st.color}`,
+   644→                          }} />
+   645→                          {st.label}
+   646→                        </motion.span>
+   647→                      )}
+   648→                    </div>
+   649→
+   650→                    {/* Close (×) button */}
+   651→                    {isActive && (
+   652→                      <motion.button
+   653→                        className="proj-close-btn"
+   654→                        initial={{ opacity: 0, scale: 0.7 }}
+   655→                        animate={{ opacity: 1, scale: 1 }}
+   656→                        onClick={(e) => { e.stopPropagation(); setSelected(null); }}
+   657→                      >
+   658→                        ×
+   659→                      </motion.button>
+   660→                    )}
+   661→                  </div>
+   662→
+   663→                  {/* ── Expanded detail (below title) ── */}
+   664→                  <AnimatePresence initial={false}>
+   665→                    {isActive && (
+   666→                      <motion.div
+   667→                        initial={{ height: 0, opacity: 0 }}
+   668→                        animate={{ height: 'auto', opacity: 1 }}
+   669→                        exit={{ height: 0, opacity: 0 }}
+   670→                        transition={{ duration: 0.48, ease: [0.25, 0.46, 0.45, 0.94] }}
+   671→                        style={{ overflow: 'hidden' }}
+   672→                      >
+   673→                        <div style={{
+   674→                          padding: isMobile ? '1.5rem 0 2rem 0' : '1.75rem 0 2.5rem 0',
+   675→                          display: 'flex', flexDirection: 'column', gap: '1.5rem',
+   676→                        }}>
+   677→                          {/* Subtitle + description */}
+   678→                          <div>
+   679→                            <p style={{
+   680→                              margin: '0 0 0.65rem',
+   681→                              fontFamily: 'monospace', fontSize: '0.85rem',
+   682→                              color: '#666', letterSpacing: '0.06em',
+   683→                            }}>
+   684→                              {proj.subtitle}
+   685→                            </p>
+   686→                            <p style={{
+   687→                              margin: 0, fontSize: '0.95rem',
+   688→                              color: 'rgba(255,255,255,0.62)', lineHeight: 1.78,
+   689→                              fontFamily: "'Open Sans', sans-serif",
+   690→                            }}>
+   691→                              {proj.description}
+   692→                            </p>
+   693→                          </div>
+   694→
+   695→                          {/* Tech pills */}
+   696→                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+   697→                            {proj.tech.map((t, idx) => (
+   698→                              <span key={idx} style={{
+   699→                                padding: '0.28rem 0.75rem',
+   700→                                border: '1px solid rgba(255,255,255,0.1)',
+   701→                                fontSize: '0.75rem', fontFamily: 'monospace',
+   702→                                color: 'rgba(255,255,255,0.6)', letterSpacing: '0.05em',
+   703→                              }}>
+   704→                                {t}
+   705→                              </span>
+   706→                            ))}
+   707→                          </div>
+   708→
+   709→                          {/* Highlights grid */}
+   710→                          <div style={{
+   711→                            display: 'grid',
+   712→                            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+   713→                            gap: '0.5rem 1.5rem',
+   714→                          }}>
+   715→                            {proj.highlights.map((h, idx) => (
+   716→                              <div key={idx} style={{
+   717→                                display: 'flex', alignItems: 'flex-start', gap: '0.55rem',
+   718→                                fontSize: '0.86rem', color: 'rgba(255,255,255,0.58)',
+   719→                                fontFamily: "'Open Sans', sans-serif", lineHeight: 1.55,
+   720→                              }}>
+   721→                                <span style={{ color: '#ff3333', marginTop: '2px', flexShrink: 0 }}>→</span>
+   722→                                {h}
+   723→                              </div>
+   724→                            ))}
+   725→                          </div>
+   726→
+   727→                          {/* CTA row */}
+   728→                          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap', paddingTop: '0.25rem' }}>
+   729→                            {proj.url ? (
+   730→                              <a
+   731→                                href={proj.url}
+   732→                                target="_blank"
+   733→                                rel="noopener noreferrer"
+   734→                                style={{
+   735→                                  display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+   736→                                  padding: '0.6rem 1.4rem',
+   737→                                  border: '1px solid rgba(255,255,255,0.22)',
+   738→                                  color: '#fff', textDecoration: 'none',
+   739→                                  fontSize: '0.8rem', fontFamily: 'monospace', letterSpacing: '0.12em',
+   740→                                  transition: 'border-color 0.2s, background 0.2s',
+   741→                                }}
+   742→                                onMouseEnter={e => {
+   743→                                  e.currentTarget.style.borderColor = '#ff3333';
+   744→                                  e.currentTarget.style.background = 'rgba(255,51,51,0.08)';
+   745→                                }}
+   746→                                onMouseLeave={e => {
+   747→                                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)';
+   748→                                  e.currentTarget.style.background = 'transparent';
+   749→                                }}
+   750→                              >
+   751→                                ↗ Visit Project
+   752→                              </a>
+   753→                            ) : (
+   754→                              <span style={{
+   755→                                fontSize: '0.78rem', fontFamily: 'monospace',
+   756→                                color: '#555', letterSpacing: '0.1em',
+   757→                              }}>
+   758→                                Not deployed yet
+   759→                              </span>
+   760→                            )}
+   761→
+   762→                            {proj.repo && (
+   763→                              <a
+   764→                                href={proj.repo}
+   765→                                target="_blank"
+   766→                                rel="noopener noreferrer"
+   767→                                style={{
+   768→                                  display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+   769→                                  padding: '0.6rem 1.4rem',
+   770→                                  border: '1px solid rgba(255,255,255,0.22)',
+   771→                                  color: '#fff', textDecoration: 'none',
+   772→                                  fontSize: '0.8rem', fontFamily: 'monospace', letterSpacing: '0.12em',
+   773→                                  transition: 'border-color 0.2s, background 0.2s',
+   774→                                }}
+   775→                                onMouseEnter={e => {
+   776→                                  e.currentTarget.style.borderColor = '#ff3333';
+   777→                                  e.currentTarget.style.background = 'rgba(255,51,51,0.08)';
+   778→                                }}
+   779→                                onMouseLeave={e => {
+   780→                                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)';
+   781→                                  e.currentTarget.style.background = 'transparent';
+   782→                                }}
+   783→                              >
+   784→                                ↗ View Code
+   785→                              </a>
+   786→                            )}
+   787→
+   788→                            {/* Prev / Next */}
+   789→                            <div style={{ display: 'flex', gap: '0.5rem', marginLeft: 'auto' }}>
+   790→                              <button
+   791→                                onClick={() => setSelected((selected - 1 + projects.length) % projects.length)}
+   792→                                style={{
+   793→                                  background: 'transparent', border: '1px solid rgba(255,255,255,0.1)',
+   794→                                  color: 'rgba(255,255,255,0.45)', padding: '0.45rem 0.9rem',
+   795→                                  fontFamily: 'monospace', fontSize: '0.78rem', letterSpacing: '0.1em',
+   796→                                  cursor: 'pointer', transition: 'color 0.2s, border-color 0.2s',
+   797→                                }}
+   798→                                onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; }}
+   799→                                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+   800→                              >
+   801→                                ← prev
+   802→                              </button>
+   803→                              <button
+   804→                                onClick={() => setSelected((selected + 1) % projects.length)}
+   805→                                style={{
+   806→                                  background: 'transparent', border: '1px solid rgba(255,255,255,0.1)',
+   807→                                  color: 'rgba(255,255,255,0.45)', padding: '0.45rem 0.9rem',
+   808→                                  fontFamily: 'monospace', fontSize: '0.78rem', letterSpacing: '0.1em',
+   809→                                  cursor: 'pointer', transition: 'color 0.2s, border-color 0.2s',
+   810→                                }}
+   811→                                onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; }}
+   812→                                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+   813→                              >
+   814→                                next →
+   815→                              </button>
+   816→                            </div>
+   817→                          </div>
+   818→
+   819→                          {/* Mobile: image panel inline */}
+   820→                          {isMobile && (
+   821→                            <div style={{ marginTop: '0.5rem' }}>
+   822→                              <RightPanel project={proj} />
+   823→                            </div>
+   824→                          )}
+   825→                        </div>
+   826→                      </motion.div>
+   827→                    )}
+   828→                  </AnimatePresence>
+   829→                </div>
+   830→              );
+   831→            })}
+   832→          </div>
+   833→
+   834→          {/* RIGHT: sticky image panel (desktop only) */}
+   835→          {!isMobile && (
+   836→            <div style={{
+   837→              flex: '0 0 38%',
+   838→              position: 'sticky',
+   839→              top: '2.5rem',
+   840→              alignSelf: 'flex-start',
+   841→            }}>
+   842→              <AnimatePresence mode="wait">
+   843→                {activeProject ? (
+   844→                  <RightPanel key={activeProject.id} project={activeProject} />
+   845→                ) : (
+   846→                  <motion.div
+   847→                    key="empty"
+   848→                    initial={{ opacity: 0 }}
+   849→                    animate={{ opacity: 1 }}
+   850→                    exit={{ opacity: 0 }}
+   851→                    style={{
+   852→                      width: '100%', minHeight: '420px',
+   853→                      border: '1px solid rgba(255,255,255,0.05)',
+   854→                      display: 'flex', flexDirection: 'column',
+   855→                      alignItems: 'center', justifyContent: 'center',
+   856→                      gap: '1rem',
+   857→                    }}
+   858→                  >
+   859→                    {/* Dot grid placeholder */}
+   860→                    <div style={{
+   861→                      display: 'grid',
+   862→                      gridTemplateColumns: 'repeat(8, 1fr)',
+   863→                      gap: '14px',
+   864→                      opacity: 0.12,
+   865→                    }}>
+   866→                      {Array.from({ length: 48 }).map((_, i) => (
+   867→                        <div key={i} style={{
+   868→                          width: '3px', height: '3px', borderRadius: '50%',
+   869→                          background: '#fff',
+   870→                        }} />
+   871→                      ))}
+   872→                    </div>
+   873→                    <p style={{
+   874→                      margin: 0, fontFamily: 'monospace', fontSize: '0.72rem',
+   875→                      color: 'rgba(255,255,255,0.2)', letterSpacing: '0.22em',
+   876→                      textTransform: 'uppercase',
+   877→                    }}>
+   878→                      Select a project
+   879→                    </p>
+   880→                  </motion.div>
+   881→                )}
+   882→              </AnimatePresence>
+   883→            </div>
+   884→          )}
+   885→        </div>
+   886→      </div>
+   887→    </section>
+   888→  );
+   889→}

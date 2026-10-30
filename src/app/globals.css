@@ -1,14 +1,24 @@
 @import "tailwindcss";
 @config "../../tailwind.config.ts";
 
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN TOKENS — cinematic technical system
+   Deep blacks, desaturated cyan / blue / violet, soft silver.
+   Lime (#CCFF00) is a detail accent, never a surface.
+   ═══════════════════════════════════════════════════════════════ */
 :root {
   --bg: #050505;
-  --bg-soft: #0a0a0a;
-  --ink: #ededed;
-  --muted: #8f8f8f;
-  --line: rgba(255, 255, 255, 0.08);
-  --accent: #ccff00;
-  --accent-dim: rgba(204, 255, 0, 0.14);
+  --bg-soft: #0a0d12;        /* charcoal */
+  --bg-raise: #171c24;       /* graphite */
+  --ink: #e8eaee;
+  --muted: #8b94a0;
+  --line: rgba(168, 176, 187, 0.1);
+  --accent: #ccff00;         /* used sparingly — status, ticks, active markers */
+  --cy: #5c9ead;             /* desaturated cyan — primary interaction tint */
+  --bl: #5277a5;             /* muted electric blue */
+  --vi: #75658f;             /* subtle violet */
+  --silver: #a8b0bb;
+  --accent-dim: rgba(92, 158, 173, 0.14);
 }
 
 * {
@@ -31,11 +41,12 @@ body {
 body {
   font-family: var(--font-body), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: var(--accent);
-  color: #050505;
+  background: rgba(92, 158, 173, 0.32);
+  color: #fff;
 }
 
 /* ---------- scrollbar ---------- */
@@ -47,11 +58,11 @@ body {
   background: #050505;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
+  background: #232a33;
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent);
+  background: #39424e;
 }
 
 /* ---------- typography helpers ---------- */
@@ -63,12 +74,18 @@ body {
 }
 
 .text-stroke {
-  -webkit-text-stroke: 1.5px rgba(237, 237, 237, 0.85);
+  -webkit-text-stroke: 1.5px rgba(168, 176, 187, 0.55);
   color: transparent;
 }
 .text-stroke-accent {
-  -webkit-text-stroke: 1.5px var(--accent);
+  -webkit-text-stroke: 1.5px rgba(92, 158, 173, 0.85);
   color: transparent;
+}
+.text-gradient-tech {
+  background: linear-gradient(100deg, #a8b0bb 0%, #5c9ead 52%, #5277a5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 @media (max-width: 768px) {
   .text-stroke,
@@ -85,7 +102,7 @@ body {
   z-index: 9998;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: 0.05;
+  opacity: 0.04;
   animation: grain 8s steps(10) infinite;
 }
 @keyframes grain {
@@ -107,10 +124,10 @@ body {
   to { transform: translateX(-50%); }
 }
 .animate-marquee {
-  animation: marquee 28s linear infinite;
+  animation: marquee 36s linear infinite;
 }
 .animate-marquee-slow {
-  animation: marquee 60s linear infinite;
+  animation: marquee 70s linear infinite;
 }
 
 /* ---------- equalizer bars ---------- */
@@ -129,6 +146,12 @@ body {
 }
 .animate-spin-slow {
   animation: spin-slow 5s linear infinite;
+}
+@keyframes rotate-slower {
+  to { transform: rotate(360deg); }
+}
+.animate-rotate-slower {
+  animation: rotate-slower 56s linear infinite;
 }
 
 /* ---------- pulsing availability dot ---------- */
@@ -172,6 +195,49 @@ body {
   transform-origin: left;
 }
 
+/* ---------- technical frame ticks ---------- */
+.tech-ticks {
+  position: relative;
+}
+.tech-ticks::before,
+.tech-ticks::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+  opacity: 0.65;
+  z-index: 2;
+}
+.tech-ticks::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid var(--cy);
+  border-left: 1px solid var(--cy);
+}
+.tech-ticks::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1px solid var(--cy);
+  border-right: 1px solid var(--cy);
+}
+
+/* ---------- scanline texture (for image frames) ---------- */
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.022) 0px,
+    rgba(255, 255, 255, 0.022) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+}
+
 /* ---------- project card shine sweep ---------- */
 .card-shine {
   position: relative;
@@ -184,9 +250,9 @@ body {
   z-index: 2;
   background: linear-gradient(
     105deg,
-    transparent 40%,
-    rgba(255, 255, 255, 0.14) 50%,
-    transparent 60%
+    transparent 42%,
+    rgba(200, 214, 224, 0.09) 50%,
+    transparent 58%
   );
   transform: translateX(-120%);
   transition: transform 0.9s ease;
@@ -211,7 +277,7 @@ body {
   content: "";
   width: 34px;
   height: 1px;
-  background: var(--accent);
+  background: var(--cy);
   display: inline-block;
 }
 
@@ -221,18 +287,23 @@ body {
   align-items: center;
   padding: 4px 10px;
   border: 1px solid var(--line);
-  border-radius: 99px;
+  border-radius: 2px;
   font-family: var(--font-mono), monospace;
   font-size: 10.5px;
-  letter-spacing: 0.04em;
-  color: #b5b5b5;
-  background: rgba(255, 255, 255, 0.02);
+  letter-spacing: 0.05em;
+  color: #b3bac3;
+  background: rgba(168, 176, 187, 0.03);
   transition: border-color 0.3s, color 0.3s, background 0.3s;
 }
 .chip:hover {
-  border-color: rgba(204, 255, 0, 0.5);
-  color: var(--accent);
+  border-color: rgba(92, 158, 173, 0.55);
+  color: #d7dde4;
   background: var(--accent-dim);
+}
+.chip-lime {
+  border-color: rgba(204, 255, 0, 0.3);
+  color: var(--accent);
+  background: rgba(204, 255, 0, 0.05);
 }
 
 /* ---------- custom cursor ---------- */
@@ -248,10 +319,10 @@ body {
   .animate-marquee,
   .animate-marquee-slow,
   .animate-spin-slow,
+  .animate-rotate-slower,
   .grain::after,
-  .animate-scroll-line {
+  .animate-scroll-line,
+  .animate-ping-soft {
     animation: none !important;
   }
 }
-
-/* tw-rebuild-marker */

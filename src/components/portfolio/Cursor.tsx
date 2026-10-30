@@ -68,8 +68,8 @@ export default function Cursor() {
           label
             ? "w-20 h-20 bg-[#ccff00] border-[#ccff00]"
             : hovering
-              ? "w-14 h-14 border-[#ccff00]/70 bg-[#ccff00]/10"
-              : "w-9 h-9 border-white/40 bg-transparent"
+              ? "w-14 h-14 border-[#5c9ead]/80 bg-[#5c9ead]/10"
+              : "w-9 h-9 border-white/35 bg-transparent"
         }`}
       >
         {label && (

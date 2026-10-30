@@ -29,7 +29,7 @@ export default function Contact() {
             LET&apos;S BUILD
             <br />
             <span className="text-stroke">SOMETHING</span>{" "}
-            <span className="text-[#ccff00]">DATA-DRIVEN</span>
+            <span className="text-gradient-tech">DATA-DRIVEN</span>
           </motion.h2>
 
           <motion.p
@@ -55,9 +55,9 @@ export default function Contact() {
               <a
                 href={`mailto:${IDENTITY.email}`}
                 data-cursor="Say hi"
-                className="group relative inline-flex items-center gap-4 px-8 md:px-10 py-4 md:py-5 rounded-full bg-[#ccff00] text-black font-display font-semibold text-base md:text-lg hover:bg-white transition-colors duration-300"
+                className="group relative inline-flex items-center gap-4 px-8 md:px-10 py-4 md:py-5 rounded-full bg-[#e8eaee] text-black font-display font-semibold text-base md:text-lg hover:bg-[#5c9ead] hover:text-white transition-colors duration-300"
               >
-                <span className="w-2.5 h-2.5 rounded-full bg-black/80 group-hover:animate-ping" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#ccff00] group-hover:animate-ping" />
                 {IDENTITY.email}
               </a>
             </div>
@@ -76,13 +76,13 @@ export default function Contact() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.1 + i * 0.06 }}
                 data-cursor={s.short}
-                className="group rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm px-4 py-4 text-left hover:border-[#ccff00]/50 hover:-translate-y-1 transition-all duration-300"
+                className="group rounded-xl border border-white/10 bg-[#0a0d12]/50 backdrop-blur-sm px-4 py-4 text-left hover:border-[#5c9ead]/50 hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-mono2 text-[9px] tracking-[0.2em] uppercase text-[#8f8f8f] group-hover:text-[#ccff00] transition-colors">
+                  <span className="font-mono2 text-[9px] tracking-[0.2em] uppercase text-[#8b94a0] group-hover:text-[#5c9ead] transition-colors">
                     {s.label}
                   </span>
-                  <svg className="text-[#8f8f8f] group-hover:text-[#ccff00] group-hover:rotate-45 transition-all duration-300" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+                  <svg className="text-[#8b94a0] group-hover:text-[#5c9ead] group-hover:rotate-45 transition-all duration-300" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
                     <line x1="7" y1="17" x2="17" y2="7" />
                     <polyline points="8 7 17 7 17 16" />
                   </svg>
@@ -94,7 +94,7 @@ export default function Contact() {
         </div>
 
         {/* bottom bar */}
-        <div className="mt-20 pt-6 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="mt-20 pt-6 pb-20 md:pb-6 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="font-mono2 text-[9.5px] tracking-[0.2em] uppercase text-[#8f8f8f]">
             © 2025 {IDENTITY.name} — All rights reserved
           </div>
@@ -107,7 +107,7 @@ export default function Contact() {
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             data-cursor="Top"
-            className="font-mono2 text-[9.5px] tracking-[0.2em] uppercase text-[#b5b5b5] hover:text-[#ccff00] transition-colors"
+            className="font-mono2 text-[9.5px] tracking-[0.2em] uppercase text-[#b5b5b5] hover:text-[#5c9ead] transition-colors"
           >
             Back to top ↑
           </button>

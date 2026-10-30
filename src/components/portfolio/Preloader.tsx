@@ -43,7 +43,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
           exit={{ y: "-100%" }}
           transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
         >
-          <div className="w-full h-full bg-[#050505] border-b border-[#ccff00]/20" />
+          <div className="w-full h-full bg-[#050505] border-b border-[#5c9ead]/25" />
         </motion.div>
       )}
       <motion.div
@@ -62,7 +62,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
         <div className="absolute bottom-6 left-6 md:bottom-8 md:left-10 font-mono2 text-[10px] tracking-[0.3em] text-[#8f8f8f] uppercase">
           Loading Assets
         </div>
-        <div className="absolute bottom-6 right-6 md:bottom-8 md:right-10 font-mono2 text-[10px] tracking-[0.3em] uppercase text-[#ccff00]">
+        <div className="absolute bottom-6 right-6 md:bottom-8 md:right-10 font-mono2 text-[10px] tracking-[0.3em] uppercase text-[#5c9ead]">
           {IDENTITY.role}
         </div>
 
@@ -75,14 +75,14 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
             className="font-display font-bold leading-none text-[26vw] md:text-[16vw] tracking-tighter text-[#ededed] tabular-nums"
           >
             {String(count).padStart(3, "0")}
-            <span className="text-[#ccff00]">%</span>
+            <span className="text-[#5c9ead]">%</span>
           </motion.div>
         </div>
 
         {/* progress hairline */}
         <div className="absolute bottom-[16vh] left-1/2 -translate-x-1/2 w-[min(420px,70vw)] h-px bg-white/10">
           <div
-            className="h-full bg-[#ccff00] transition-[width] duration-100 ease-linear"
+            className="h-full bg-gradient-to-r from-[#5c9ead] to-[#ccff00] transition-[width] duration-100 ease-linear"
             style={{ width: `${count}%` }}
           />
         </div>

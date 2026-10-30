@@ -1,0 +1,912 @@
+     1→     1→import { motion, AnimatePresence, useInView, useMotionValue, useSpring, useReducedMotion, animate } from 'framer-motion';
+     2→     2→import { useState, useRef, useEffect, useCallback } from 'react';
+     3→     3→
+     4→     4→// ===== CV LINK =====
+     5→     5→// Put your CV link here. Either:
+     6→     6→//   • a file in your /public folder, e.g. '/Rohit_Suthar_CV.pdf'
+     7→     7→//   • or a full URL, e.g. a Google Drive / hosted PDF link
+     8→     8→const CV_LINK = '/Rohit_Suthar_CV.pdf';
+     9→     9→
+    10→    10→// ===== MOTION CONSTANTS =====
+    11→    11→export const softSpring = { type: 'spring', stiffness: 200, damping: 30, mass: 1 };
+    12→    12→export const quickSpring = { type: 'spring', stiffness: 400, damping: 25, mass: 0.5 };
+    13→    13→export const idleSpring = { type: 'spring', stiffness: 50, damping: 20 };
+    14→    14→
+    15→    15→const baseVariants = {
+    16→    16→  hidden: { opacity: 0, y: 20, scale: 0.98 },
+    17→    17→  visible: { opacity: 1, y: 0, scale: 1, transition: softSpring },
+    18→    18→  idle: {
+    19→    19→    y: [-2, 2, -2],
+    20→    20→    transition: { ...idleSpring, duration: 4, repeat: Infinity, repeatType: 'reverse', delay: 1 }
+    21→    21→  }
+    22→    22→};
+    23→    23→
+    24→    24→// ===== DOWNLOAD ICON =====
+    25→    25→const DownloadIcon = () => (
+    26→    26→  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    27→    27→    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+    28→    28→    <polyline points="7 10 12 15 17 10"/>
+    29→    29→    <line x1="12" y1="15" x2="12" y2="3"/>
+    30→    30→  </svg>
+    31→    31→);
+    32→    32→
+    33→    33→// ===== SOCIAL ICONS =====
+    34→    34→const InstagramIcon = () => (
+    35→    35→  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    36→    36→    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+    37→    37→    <circle cx="12" cy="12" r="4"/>
+    38→    38→    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
+    39→    39→  </svg>
+    40→    40→);
+    41→    41→const TwitterIcon = () => (
+    42→    42→  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+    43→    43→    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+    44→    44→  </svg>
+    45→    45→);
+    46→    46→const WhatsAppIcon = () => (
+    47→    47→  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+    48→    48→    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    49→    49→  </svg>
+    50→    50→);
+    51→    51→const LinkedInIcon = () => (
+    52→    52→  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+    53→    53→    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+    54→    54→  </svg>
+    55→    55→);
+    56→    56→const GitHubIcon = () => (
+    57→    57→  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+    58→    58→    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+    59→    59→  </svg>
+    60→    60→);
+    61→    61→
+    62→    62→const socialLinks = [
+    63→    63→  { name: 'Twitter',   href: 'https://x.com/RohitttSuthar',              icon: TwitterIcon,   hoverColor: '#1DA1F2' },
+    64→    64→  { name: 'WhatsApp',  href: 'https://wa.me/7737438464',                  icon: WhatsAppIcon,  hoverColor: '#25D366' },
+    65→    65→  { name: 'LinkedIn',  href: 'http://www.linkedin.com/in/rohitsuthar09',  icon: LinkedInIcon,  hoverColor: '#0A66C2' },
+    66→    66→  { name: 'GitHub',    href: 'https://github.com/9929-90',                icon: GitHubIcon,    hoverColor: '#ffffff' },
+    67→    67→];
+    68→    68→
+    69→    69→const SocialIcon = ({ name, href, icon: Icon, hoverColor, index }) => {
+    70→    70→  const [isHovered, setIsHovered] = useState(false);
+    71→    71→  return (
+    72→    72→    <motion.a
+    73→    73→      href={href} target="_blank" rel="noopener noreferrer" aria-label={name}
+    74→    74→      initial={{ opacity: 0, y: 10 }}
+    75→    75→      animate={{ opacity: 1, y: 0 }}
+    76→    76→      transition={{ ...softSpring, delay: 0.6 + index * 0.07 }}
+    77→    77→      onMouseEnter={() => setIsHovered(true)}
+    78→    78→      onMouseLeave={() => setIsHovered(false)}
+    79→    79→      whileTap={{ scale: 0.9 }}
+    80→    80→      style={{ color: isHovered ? hoverColor : 'rgba(255,255,255,0.45)' }}
+    81→    81→      className="relative flex items-center justify-center w-9 h-9 transition-colors duration-200"
+    82→    82→    >
+    83→    83→      <motion.span
+    84→    84→        className="absolute inset-0 rounded-full"
+    85→    85→        style={{ border: `1px solid ${hoverColor}` }}
+    86→    86→        initial={{ opacity: 0, scale: 0.8 }}
+    87→    87→        animate={{ opacity: isHovered ? 0.35 : 0, scale: isHovered ? 1 : 0.8 }}
+    88→    88→        transition={quickSpring}
+    89→    89→      />
+    90→    90→      <Icon />
+    91→    91→    </motion.a>
+    92→    92→  );
+    93→    93→};
+    94→    94→
+    95→    95→// ===== SCRAMBLE TEXT HOOK =====
+    96→    96→const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%';
+    97→    97→
+    98→    98→function useScramble(text, isHovered) {
+    99→    99→  const [display, setDisplay] = useState(text);
+   100→   100→  const frameRef = useRef(null);
+   101→   101→  const iterRef = useRef(0);
+   102→   102→
+   103→   103→  useEffect(() => {
+   104→   104→    if (!isHovered) { setDisplay(text); return; }
+   105→   105→    iterRef.current = 0;
+   106→   106→    const scramble = () => {
+   107→   107→      const iter = iterRef.current;
+   108→   108→      setDisplay(
+   109→   109→        text.split('').map((char, i) => {
+   110→   110→          if (char === ' ') return ' ';
+   111→   111→          if (i < iter) return text[i];
+   112→   112→          return CHARS[Math.floor(Math.random() * CHARS.length)];
+   113→   113→        }).join('')
+   114→   114→      );
+   115→   115→      iterRef.current += 0.5;
+   116→   116→      if (iterRef.current < text.length) frameRef.current = requestAnimationFrame(scramble);
+   117→   117→      else setDisplay(text);
+   118→   118→    };
+   119→   119→    frameRef.current = requestAnimationFrame(scramble);
+   120→   120→    return () => cancelAnimationFrame(frameRef.current);
+   121→   121→  }, [isHovered, text]);
+   122→   122→
+   123→   123→  return display;
+   124→   124→}
+   125→   125→
+   126→   126→// ===== NAV LINK =====
+   127→   127→const NavLink = ({ children, href, index: idx }) => {
+   128→   128→  const [isHovered, setIsHovered] = useState(false);
+   129→   129→  const label = children.toUpperCase();
+   130→   130→  const scrambled = useScramble(label, isHovered);
+   131→   131→  const num = String(idx + 1).padStart(2, '0');
+   132→   132→
+   133→   133→  return (
+   134→   134→    <motion.a
+   135→   135→      href={href}
+   136→   136→      className="relative group cursor-pointer"
+   137→   137→      onMouseEnter={() => setIsHovered(true)}
+   138→   138→      onMouseLeave={() => setIsHovered(false)}
+   139→   139→      whileTap={{ scale: 0.95 }}
+   140→   140→      initial={{ opacity: 0, y: -8 }}
+   141→   141→      animate={{ opacity: 1, y: 0 }}
+   142→   142→      transition={{ ...softSpring, delay: 0.1 + idx * 0.08 }}
+   143→   143→      style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}
+   144→   144→    >
+   145→   145→      <motion.span
+   146→   146→        animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : -4 }}
+   147→   147→        transition={quickSpring}
+   148→   148→        style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 300, fontSize: '0.55rem', letterSpacing: '0.08em', color: '#ff3333' }}
+   149→   149→      >
+   150→   150→        {num}
+   151→   151→      </motion.span>
+   152→   152→      <span style={{
+   153→   153→        fontFamily: "'Open Sans', sans-serif", fontWeight: isHovered ? 400 : 300,
+   154→   154→        fontSize: '0.68rem', letterSpacing: '0.22em',
+   155→   155→        color: isHovered ? '#ffffff' : 'rgba(255,255,255,0.55)',
+   156→   156→        transition: 'color 0.2s ease, font-weight 0.1s',
+   157→   157→        display: 'inline-block', minWidth: `${label.length * 0.5}rem`,
+   158→   158→      }}>
+   159→   159→        {scrambled}
+   160→   160→      </span>
+   161→   161→      <motion.span
+   162→   162→        style={{ position: 'absolute', bottom: '-3px', left: '50%', height: '1px', background: 'linear-gradient(90deg, transparent, #ff3333, transparent)', translateX: '-50%' }}
+   163→   163→        initial={{ width: '0%' }}
+   164→   164→        animate={{ width: isHovered ? '100%' : '0%' }}
+   165→   165→        transition={{ duration: 0.25, ease: 'easeOut' }}
+   166→   166→      />
+   167→   167→    </motion.a>
+   168→   168→  );
+   169→   169→};
+   170→   170→
+   171→   171→// ===== MOBILE MENU LINK =====
+   172→   172→const MobileMenuLink = ({ children, href, index: idx, onClick }) => {
+   173→   173→  const [isHovered, setIsHovered] = useState(false);
+   174→   174→  const label = children.toUpperCase();
+   175→   175→  const scrambled = useScramble(label, isHovered);
+   176→   176→
+   177→   177→  return (
+   178→   178→    <motion.a
+   179→   179→      href={href} onClick={onClick}
+   180→   180→      onMouseEnter={() => setIsHovered(true)}
+   181→   181→      onMouseLeave={() => setIsHovered(false)}
+   182→   182→      style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '16px' }}
+   183→   183→      initial={{ opacity: 0, x: -40 }}
+   184→   184→      animate={{ opacity: 1, x: 0 }}
+   185→   185→      exit={{ opacity: 0, x: -20 }}
+   186→   186→      transition={{ ...softSpring, delay: 0.05 + idx * 0.07 }}
+   187→   187→    >
+   188→   188→      <span style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 300, fontSize: '0.7rem', letterSpacing: '0.12em', color: '#ff3333', marginTop: '6px' }}>
+   189→   189→        {String(idx + 1).padStart(2, '0')}
+   190→   190→      </span>
+   191→   191→      <span style={{
+   192→   192→        fontFamily: "'Open Sans', sans-serif", fontWeight: 200,
+   193→   193→        fontSize: 'clamp(2rem, 8vw, 3.5rem)', letterSpacing: '0.15em',
+   194→   194→        color: isHovered ? '#ff3333' : '#ffffff', transition: 'color 0.2s ease', lineHeight: 1,
+   195→   195→      }}>
+   196→   196→        {scrambled}
+   197→   197→      </span>
+   198→   198→    </motion.a>
+   199→   199→  );
+   200→   200→};
+   201→   201→
+   202→   202→// ===== SLIDING FILL BUTTON =====
+   203→   203→const SlideButton = ({ children, href, onClick, variant = 'outline', icon, delay = 0, target, rel, download }) => {
+   204→   204→  const [hovered, setHovered] = useState(false);
+   205→   205→  const isSolid = variant === 'solid';
+   206→   206→
+   207→   207→  return (
+   208→   208→    <motion.a
+   209→   209→      href={href}
+   210→   210→      target={target}
+   211→   211→      rel={rel}
+   212→   212→      download={download}
+   213→   213→      onClick={onClick}
+   214→   214→      onMouseEnter={() => setHovered(true)}
+   215→   215→      onMouseLeave={() => setHovered(false)}
+   216→   216→      whileTap={{ scale: 0.96 }}
+   217→   217→      initial={{ opacity: 0, y: 8 }}
+   218→   218→      animate={{ opacity: 1, y: 0 }}
+   219→   219→      transition={{ ...softSpring, delay }}
+   220→   220→      style={{
+   221→   221→        position: 'relative',
+   222→   222→        display: 'inline-flex',
+   223→   223→        alignItems: 'center',
+   224→   224→        justifyContent: 'center',
+   225→   225→        gap: '8px',
+   226→   226→        padding: '10px 22px',
+   227→   227→        borderRadius: '2px',
+   228→   228→        border: isSolid ? 'none' : '1px solid rgba(255,255,255,0.3)',
+   229→   229→        background: isSolid ? '#ffffff' : 'transparent',
+   230→   230→        cursor: 'pointer',
+   231→   231→        textDecoration: 'none',
+   232→   232→        overflow: 'hidden',
+   233→   233→        userSelect: 'none',
+   234→   234→        flex: '1 1 auto',
+   235→   235→        minWidth: 0,
+   236→   236→        maxWidth: '180px',
+   237→   237→      }}
+   238→   238→    >
+   239→   239→      <motion.span
+   240→   240→        style={{
+   241→   241→          position: 'absolute', inset: 0,
+   242→   242→          background: isSolid ? '#ff3333' : '#ffffff',
+   243→   243→          originX: 0, zIndex: 0,
+   244→   244→        }}
+   245→   245→        initial={{ scaleX: 0 }}
+   246→   246→        animate={{ scaleX: hovered ? 1 : 0 }}
+   247→   247→        transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1] }}
+   248→   248→      />
+   249→   249→      {icon && (
+   250→   250→        <motion.span
+   251→   251→          animate={{ color: isSolid ? (hovered ? '#fff' : '#000') : (hovered ? '#000' : '#fff') }}
+   252→   252→          transition={{ duration: 0.15, delay: hovered ? 0.1 : 0 }}
+   253→   253→          style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center' }}
+   254→   254→        >
+   255→   255→          {icon}
+   256→   256→        </motion.span>
+   257→   257→      )}
+   258→   258→      <motion.span
+   259→   259→        animate={{ color: isSolid ? (hovered ? '#fff' : '#000') : (hovered ? '#000' : 'rgba(255,255,255,0.9)') }}
+   260→   260→        transition={{ duration: 0.15, delay: hovered ? 0.1 : 0 }}
+   261→   261→        style={{
+   262→   262→          position: 'relative', zIndex: 1,
+   263→   263→          fontFamily: "'Open Sans', sans-serif",
+   264→   264→          fontWeight: 600,
+   265→   265→          fontSize: '0.68rem',
+   266→   266→          letterSpacing: '0.2em',
+   267→   267→          textTransform: 'uppercase',
+   268→   268→          whiteSpace: 'nowrap',
+   269→   269→        }}
+   270→   270→      >
+   271→   271→        {children}
+   272→   272→      </motion.span>
+   273→   273→    </motion.a>
+   274→   274→  );
+   275→   275→};
+   276→   276→
+   277→   277→// ===== HIGHLIGHT CHIP =====
+   278→   278→const HighlightChip = ({ children, index = 0, accent = false }) => (
+   279→   279→  <motion.span
+   280→   280→    initial={{ opacity: 0, y: 6 }}
+   281→   281→    animate={{ opacity: 1, y: 0 }}
+   282→   282→    transition={{ ...softSpring, delay: 0.55 + index * 0.06 }}
+   283→   283→    style={{
+   284→   284→      display: 'inline-flex',
+   285→   285→      alignItems: 'center',
+   286→   286→      gap: '6px',
+   287→   287→      padding: '5px 10px',
+   288→   288→      border: `1px solid ${accent ? 'rgba(255,51,51,0.5)' : 'rgba(255,255,255,0.15)'}`,
+   289→   289→      borderRadius: '2px',
+   290→   290→      fontFamily: "'Open Sans', sans-serif",
+   291→   291→      fontWeight: 400,
+   292→   292→      fontSize: '0.62rem',
+   293→   293→      letterSpacing: '0.12em',
+   294→   294→      textTransform: 'uppercase',
+   295→   295→      color: accent ? '#ff6666' : 'rgba(255,255,255,0.7)',
+   296→   296→      whiteSpace: 'nowrap',
+   297→   297→    }}
+   298→   298→  >
+   299→   299→    {children}
+   300→   300→  </motion.span>
+   301→   301→);
+   302→   302→
+   303→   303→// ===== CONTACT BUTTON + DROPDOWN =====
+   304→   304→const PhoneIcon = () => (
+   305→   305→  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+   306→   306→    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.08 1.18 2 2 0 012.06 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+   307→   307→  </svg>
+   308→   308→);
+   309→   309→const MailIcon = () => (
+   310→   310→  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+   311→   311→    <rect x="2" y="4" width="20" height="16" rx="2"/>
+   312→   312→    <path d="M2 7l10 7 10-7"/>
+   313→   313→  </svg>
+   314→   314→);
+   315→   315→const CopyIcon = () => (
+   316→   316→  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+   317→   317→    <rect x="9" y="9" width="13" height="13" rx="2"/>
+   318→   318→    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+   319→   319→  </svg>
+   320→   320→);
+   321→   321→const CheckIcon = () => (
+   322→   322→  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+   323→   323→    <polyline points="20 6 9 17 4 12"/>
+   324→   324→  </svg>
+   325→   325→);
+   326→   326→
+   327→   327→const ContactItem = ({ label, value, href, icon: Icon, index }) => {
+   328→   328→  const [copied, setCopied] = useState(false);
+   329→   329→  const [hovered, setHovered] = useState(false);
+   330→   330→
+   331→   331→  const handleCopy = (e) => {
+   332→   332→    e.preventDefault();
+   333→   333→    navigator.clipboard.writeText(value).then(() => {
+   334→   334→      setCopied(true);
+   335→   335→      setTimeout(() => setCopied(false), 1800);
+   336→   336→    });
+   337→   337→  };
+   338→   338→
+   339→   339→  return (
+   340→   340→    <motion.div
+   341→   341→      initial={{ opacity: 0, y: -8, scale: 0.97 }}
+   342→   342→      animate={{ opacity: 1, y: 0, scale: 1 }}
+   343→   343→      exit={{ opacity: 0, y: -6, scale: 0.97 }}
+   344→   344→      transition={{ ...softSpring, delay: 0.06 * index }}
+   345→   345→      onMouseEnter={() => setHovered(true)}
+   346→   346→      onMouseLeave={() => setHovered(false)}
+   347→   347→      style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+   348→   348→    >
+   349→   349→      <motion.span
+   350→   350→        style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.05)', originX: 0, zIndex: 0 }}
+   351→   351→        initial={{ scaleX: 0 }}
+   352→   352→        animate={{ scaleX: hovered ? 1 : 0 }}
+   353→   353→        transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
+   354→   354→      />
+   355→   355→      <a href={href} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', position: 'relative', zIndex: 1 }}>
+   356→   356→        <motion.span
+   357→   357→          animate={{ color: hovered ? '#ff3333' : 'rgba(255,255,255,0.4)' }}
+   358→   358→          transition={{ duration: 0.2 }}
+   359→   359→          style={{ flexShrink: 0, display: 'flex' }}
+   360→   360→        >
+   361→   361→          <Icon />
+   362→   362→        </motion.span>
+   363→   363→        <div style={{ flex: 1, minWidth: 0 }}>
+   364→   364→          <div style={{ fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#555', fontFamily: "'Open Sans',sans-serif", fontWeight: 600, marginBottom: '2px' }}>{label}</div>
+   365→   365→          <motion.div
+   366→   366→            animate={{ color: hovered ? '#ffffff' : 'rgba(255,255,255,0.75)' }}
+   367→   367→            transition={{ duration: 0.2 }}
+   368→   368→            style={{ fontSize: '12px', fontFamily: "'Open Sans',sans-serif", fontWeight: 400, letterSpacing: '0.04em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+   369→   369→          >
+   370→   370→            {value}
+   371→   371→          </motion.div>
+   372→   372→        </div>
+   373→   373→        <motion.button
+   374→   374→          onClick={handleCopy}
+   375→   375→          whileTap={{ scale: 0.85 }}
+   376→   376→          animate={{ opacity: hovered ? 1 : 0 }}
+   377→   377→          transition={{ duration: 0.18 }}
+   378→   378→          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: copied ? '#22c55e' : 'rgba(255,255,255,0.4)', flexShrink: 0, display: 'flex' }}
+   379→   379→          title="Copy"
+   380→   380→        >
+   381→   381→          {copied ? <CheckIcon /> : <CopyIcon />}
+   382→   382→        </motion.button>
+   383→   383→      </a>
+   384→   384→    </motion.div>
+   385→   385→  );
+   386→   386→};
+   387→   387→
+   388→   388→const ContactButton = () => {
+   389→   389→  const [open, setOpen] = useState(false);
+   390→   390→  const [hovered, setHovered] = useState(false);
+   391→   391→  const dropRef = useRef(null);
+   392→   392→
+   393→   393→  useEffect(() => {
+   394→   394→    if (!open) return;
+   395→   395→    const handler = (e) => {
+   396→   396→      if (dropRef.current && !dropRef.current.contains(e.target)) setOpen(false);
+   397→   397→    };
+   398→   398→    document.addEventListener('mousedown', handler);
+   399→   399→    return () => document.removeEventListener('mousedown', handler);
+   400→   400→  }, [open]);
+   401→   401→
+   402→   402→  const contacts = [
+   403→   403→    { label: 'Call',  value: '+91 7737438464',          href: 'tel:+917737438464',             icon: PhoneIcon },
+   404→   404→    { label: 'Email', value: 'rohitsuthar410@gmail.com', href: 'mailto:rohitsuthar410@gmail.com', icon: MailIcon  },
+   405→   405→  ];
+   406→   406→
+   407→   407→  return (
+   408→   408→    <div ref={dropRef} style={{ position: 'relative', display: 'inline-block' }}>
+   409→   409→      <motion.button
+   410→   410→        onClick={() => setOpen(o => !o)}
+   411→   411→        onMouseEnter={() => setHovered(true)}
+   412→   412→        onMouseLeave={() => setHovered(false)}
+   413→   413→        whileTap={{ scale: 0.96 }}
+   414→   414→        initial={{ opacity: 0, y: -8 }}
+   415→   415→        animate={{ opacity: 1, y: 0 }}
+   416→   416→        transition={{ ...softSpring, delay: 0.42 }}
+   417→   417→        style={{
+   418→   418→          position: 'relative',
+   419→   419→          display: 'inline-flex', alignItems: 'center', gap: '8px',
+   420→   420→          padding: '8px 20px',
+   421→   421→          border: '1px solid',
+   422→   422→          borderColor: open ? '#ff3333' : (hovered ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.2)'),
+   423→   423→          borderRadius: '2px',
+   424→   424→          background: 'transparent',
+   425→   425→          cursor: 'pointer',
+   426→   426→          overflow: 'hidden',
+   427→   427→          transition: 'border-color 0.25s ease',
+   428→   428→        }}
+   429→   429→      >
+   430→   430→        <motion.span
+   431→   431→          style={{ position: 'absolute', inset: 0, background: '#ffffff', originX: 0, zIndex: 0 }}
+   432→   432→          initial={{ scaleX: 0 }}
+   433→   433→          animate={{ scaleX: hovered && !open ? 1 : 0 }}
+   434→   434→          transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1] }}
+   435→   435→        />
+   436→   436→        <motion.span
+   437→   437→          animate={{ scale: [1, 1.4, 1] }}
+   438→   438→          transition={{ scale: { duration: 1.6, repeat: Infinity, ease: 'easeInOut' } }}
+   439→   439→          style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#ff3333', flexShrink: 0, position: 'relative', zIndex: 1 }}
+   440→   440→        />
+   441→   441→        <motion.span
+   442→   442→          animate={{ color: hovered && !open ? '#000000' : 'rgba(255,255,255,0.8)' }}
+   443→   443→          transition={{ duration: 0.15, delay: hovered ? 0.1 : 0 }}
+   444→   444→          style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 400, fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase', position: 'relative', zIndex: 1, whiteSpace: 'nowrap' }}
+   445→   445→        >
+   446→   446→          Let's Talk
+   447→   447→        </motion.span>
+   448→   448→        <motion.span
+   449→   449→          animate={{ rotate: open ? 180 : 0, color: hovered && !open ? '#000' : 'rgba(255,255,255,0.5)' }}
+   450→   450→          transition={{ ...quickSpring }}
+   451→   451→          style={{ display: 'flex', position: 'relative', zIndex: 1 }}
+   452→   452→        >
+   453→   453→          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+   454→   454→            <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+   455→   455→          </svg>
+   456→   456→        </motion.span>
+   457→   457→      </motion.button>
+   458→   458→
+   459→   459→      <AnimatePresence>
+   460→   460→        {open && (
+   461→   461→          <motion.div
+   462→   462→            initial={{ opacity: 0, y: -6, scale: 0.97 }}
+   463→   463→            animate={{ opacity: 1, y: 0, scale: 1 }}
+   464→   464→            exit={{ opacity: 0, y: -6, scale: 0.97 }}
+   465→   465→            transition={quickSpring}
+   466→   466→            style={{
+   467→   467→              position: 'absolute',
+   468→   468→              top: 'calc(100% + 8px)',
+   469→   469→              right: 0,
+   470→   470→              minWidth: '240px',
+   471→   471→              background: 'rgba(10,10,10,0.96)',
+   472→   472→              backdropFilter: 'blur(20px)',
+   473→   473→              WebkitBackdropFilter: 'blur(20px)',
+   474→   474→              border: '1px solid rgba(255,255,255,0.1)',
+   475→   475→              borderRadius: '4px',
+   476→   476→              overflow: 'hidden',
+   477→   477→              zIndex: 100,
+   478→   478→              boxShadow: '0 16px 40px rgba(0,0,0,0.6)',
+   479→   479→            }}
+   480→   480→          >
+   481→   481→            <div style={{ padding: '10px 16px 8px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+   482→   482→              <span style={{ fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#444', fontFamily: "'Open Sans',sans-serif", fontWeight: 600 }}>
+   483→   483→                Reach out
+   484→   484→              </span>
+   485→   485→            </div>
+   486→   486→            {contacts.map((c, i) => (
+   487→   487→              <ContactItem key={c.label} {...c} index={i} />
+   488→   488→            ))}
+   489→   489→          </motion.div>
+   490→   490→        )}
+   491→   491→      </AnimatePresence>
+   492→   492→    </div>
+   493→   493→  );
+   494→   494→};
+   495→   495→
+   496→   496→// ===== UTILITIES =====
+   497→   497→const TextReveal = ({ text, delay = 0, className = '' }) => {
+   498→   498→  const reducedMotion = useReducedMotion();
+   499→   499→  const chars = text.split('');
+   500→   500→  const containerVariants = {
+   501→   501→    hidden: { opacity: 0 },
+   502→   502→    visible: { opacity: 1, transition: { staggerChildren: reducedMotion ? 0 : 0.03, delayChildren: delay } }
+   503→   503→  };
+   504→   504→  const charVariants = {
+   505→   505→    hidden: { opacity: 0, y: 15, filter: reducedMotion ? 'blur(0px)' : 'blur(4px)' },
+   506→   506→    visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: reducedMotion ? { duration: 0 } : softSpring }
+   507→   507→  };
+   508→   508→  return (
+   509→   509→    <motion.span className={`inline-block ${className}`} variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+   510→   510→      {chars.map((char, i) => (
+   511→   511→        <motion.span key={i} variants={charVariants} className="inline-block will-change-transform">
+   512→   512→          {char === ' ' ? '\u00A0' : char}
+   513→   513→        </motion.span>
+   514→   514→      ))}
+   515→   515→    </motion.span>
+   516→   516→  );
+   517→   517→};
+   518→   518→
+   519→   519→const WordReveal = ({ text, delay = 0 }) => {
+   520→   520→  const reducedMotion = useReducedMotion();
+   521→   521→  const words = text.split(' ');
+   522→   522→  const containerVariants = {
+   523→   523→    hidden: { opacity: 0 },
+   524→   524→    visible: { opacity: 1, transition: { staggerChildren: reducedMotion ? 0 : 0.05, delayChildren: delay } }
+   525→   525→  };
+   526→   526→  const wordVariants = {
+   527→   527→    hidden: { opacity: 0, y: 10 },
+   528→   528→    visible: { opacity: 1, y: 0, transition: reducedMotion ? { duration: 0 } : softSpring }
+   529→   529→  };
+   530→   530→  return (
+   531→   531→    <motion.span variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+   532→   532→      {words.map((word, i) => (
+   533→   533→        <motion.span key={i} variants={wordVariants} className="inline-block mr-2 will-change-transform">{word}</motion.span>
+   534→   534→      ))}
+   535→   535→    </motion.span>
+   536→   536→  );
+   537→   537→};
+   538→   538→
+   539→   539→const MagneticButton = ({ children, strength = 0.4 }) => {
+   540→   540→  const reducedMotion = useReducedMotion();
+   541→   541→  const x = useMotionValue(0); const y = useMotionValue(0);
+   542→   542→  const sx = useSpring(x, quickSpring); const sy = useSpring(y, quickSpring);
+   543→   543→  const handleMouseMove = (e) => {
+   544→   544→    if (reducedMotion) return;
+   545→   545→    const { clientX, clientY, currentTarget } = e;
+   546→   546→    const { left, top, width, height } = currentTarget.getBoundingClientRect();
+   547→   547→    x.set(((clientX - left - width / 2) / width) * 20 * strength);
+   548→   548→    y.set(((clientY - top - height / 2) / height) * 20 * strength);
+   549→   549→  };
+   550→   550→  return (
+   551→   551→    <motion.div onMouseMove={handleMouseMove} onMouseLeave={() => { x.set(0); y.set(0); }} style={{ x: sx, y: sy }} className="inline-block will-change-transform">
+   552→   552→      {children}
+   553→   553→    </motion.div>
+   554→   554→  );
+   555→   555→};
+   556→   556→
+   557→   557→const TiltCard = ({ children, maxTilt = 10 }) => {
+   558→   558→  const reducedMotion = useReducedMotion();
+   559→   559→  const rx = useMotionValue(0); const ry = useMotionValue(0);
+   560→   560→  const srx = useSpring(rx, quickSpring); const sry = useSpring(ry, quickSpring);
+   561→   561→  const handleMouseMove = (e) => {
+   562→   562→    if (reducedMotion) return;
+   563→   563→    const { clientX, clientY, currentTarget } = e;
+   564→   564→    const { left, top, width, height } = currentTarget.getBoundingClientRect();
+   565→   565→    ry.set(((clientX - left) / width - 0.5) * maxTilt * 2);
+   566→   566→    rx.set(((clientY - top) / height - 0.5) * maxTilt * -2);
+   567→   567→  };
+   568→   568→  return (
+   569→   569→    <motion.div onMouseMove={handleMouseMove} onMouseLeave={() => { rx.set(0); ry.set(0); }} style={{ perspective: 1200, rotateX: srx, rotateY: sry, transformStyle: 'preserve-3d' }} className="will-change-transform">
+   570→   570→      {children}
+   571→   571→    </motion.div>
+   572→   572→  );
+   573→   573→};
+   574→   574→
+   575→   575→// ===== HERO =====
+   576→   576→const Hero = ({ profileImage = '/Profile.png' }) => {
+   577→   577→  const reducedMotion = useReducedMotion();
+   578→   578→  const [isMenuOpen, setIsMenuOpen] = useState(false);
+   579→   579→  const imageRef = useRef(null);
+   580→   580→  const isImageInView = useInView(imageRef, { once: true, amount: 0.1 });
+   581→   581→  const bgX = useMotionValue(0);
+   582→   582→
+   583→   583→  // Detect viewport size for adaptive layout
+   584→   584→  const [isMobile, setIsMobile] = useState(false);
+   585→   585→  const [isSmallMobile, setIsSmallMobile] = useState(false);
+   586→   586→
+   587→   587→  useEffect(() => {
+   588→   588→    const checkSize = () => {
+   589→   589→      setIsMobile(window.innerWidth < 1024);
+   590→   590→      setIsSmallMobile(window.innerWidth < 400);
+   591→   591→    };
+   592→   592→    checkSize();
+   593→   593→    window.addEventListener('resize', checkSize);
+   594→   594→    return () => window.removeEventListener('resize', checkSize);
+   595→   595→  }, []);
+   596→   596→
+   597→   597→  useEffect(() => {
+   598→   598→    if (reducedMotion) return;
+   599→   599→    const controls = animate(bgX, [0, 100, 0], { duration: 20, repeat: Infinity, ease: 'linear' });
+   600→   600→    return controls.stop;
+   601→   601→  }, [reducedMotion, bgX]);
+   602→   602→
+   603→   603→  useEffect(() => {
+   604→   604→    document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+   605→   605→    return () => { document.body.style.overflow = ''; };
+   606→   606→  }, [isMenuOpen]);
+   607→   607→
+   608→   608→  const menuItems = [
+   609→   609→    { label: 'About',    href: '/about'    },
+   610→   610→    { label: 'Projects', href: '/projects' },
+   611→   611→    { label: 'Skills',   href: '/skills'   },
+   612→   612→    { label: 'Insights',   href: '/insights'   },
+   613→   613→  ];
+   614→   614→
+   615→   615→  return (
+   616→   616→    <div
+   617→   617→      style={{
+   618→   618→        minHeight: '100svh',
+   619→   619→        width: '100%',
+   620→   620→        backgroundColor: '#000',
+   621→   621→        color: '#fff',
+   622→   622→        overflow: 'hidden',
+   623→   623→        display: 'flex',
+   624→   624→        flexDirection: 'column',
+   625→   625→        fontFamily: "'Open Sans', sans-serif",
+   626→   626→        boxSizing: 'border-box',
+   627→   627→      }}
+   628→   628→    >
+   629→   629→      <style>{`
+   630→   630→        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,200;0,300;0,400;0,600&display=swap');
+   631→   631→        *, *::before, *::after { box-sizing: border-box; }
+   632→   632→        body { background-color: #000; color: white; margin: 0; padding: 0; }
+   633→   633→        ::selection { background: rgba(255,51,51,0.25); }
+   634→   634→      `}</style>
+   635→   635→
+   636→   636→      {/* ── NAV ── */}
+   637→   637→      <motion.nav
+   638→   638→        style={{
+   639→   639→          width: '100%',
+   640→   640→          zIndex: 50,
+   641→   641→          padding: isMobile ? '16px 20px' : '20px 40px',
+   642→   642→          display: 'flex',
+   643→   643→          alignItems: 'center',
+   644→   644→          justifyContent: 'space-between',
+   645→   645→          flexShrink: 0,
+   646→   646→        }}
+   647→   647→        initial={{ opacity: 0, y: -12 }}
+   648→   648→        animate={{ opacity: 1, y: 0 }}
+   649→   649→        transition={{ ...softSpring, delay: 0.05 }}
+   650→   650→      >
+   651→   651→        {/* Desktop links */}
+   652→   652→        {!isMobile && (
+   653→   653→          <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
+   654→   654→            {menuItems.map((item, i) => (
+   655→   655→              <NavLink key={item.label} href={item.href} index={i}>{item.label}</NavLink>
+   656→   656→            ))}
+   657→   657→          </div>
+   658→   658→        )}
+   659→   659→
+   660→   660→        {/* Mobile: logo/name on left */}
+   661→   661→        {isMobile && (
+   662→   662→          <span style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 300, fontSize: '0.7rem', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>
+   663→   663→            RS
+   664→   664→          </span>
+   665→   665→        )}
+   666→   666→
+   667→   667→        {/* Contact button — desktop */}
+   668→   668→        {!isMobile && <ContactButton />}
+   669→   669→
+   670→   670→        {/* Hamburger — mobile */}
+   671→   671→        {isMobile && (
+   672→   672→          <motion.button
+   673→   673→            style={{ width: '32px', height: '32px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px', zIndex: 60, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+   674→   674→            onClick={() => setIsMenuOpen(!isMenuOpen)}
+   675→   675→            whileTap={{ scale: 0.9 }}
+   676→   676→            aria-label="Toggle menu"
+   677→   677→          >
+   678→   678→            <motion.span style={{ width: '24px', height: '1px', display: 'block', background: '#fff' }}
+   679→   679→              animate={{ rotate: isMenuOpen ? 45 : 0, y: isMenuOpen ? 5 : 0, background: isMenuOpen ? '#ff3333' : '#ffffff' }}
+   680→   680→              transition={quickSpring}
+   681→   681→            />
+   682→   682→            <motion.span style={{ width: '16px', height: '1px', display: 'block', background: '#fff', alignSelf: 'flex-start' }}
+   683→   683→              animate={{ opacity: isMenuOpen ? 0 : 1, x: isMenuOpen ? -8 : 0 }}
+   684→   684→              transition={quickSpring}
+   685→   685→            />
+   686→   686→            <motion.span style={{ width: '24px', height: '1px', display: 'block', background: '#fff' }}
+   687→   687→              animate={{ rotate: isMenuOpen ? -45 : 0, y: isMenuOpen ? -5 : 0, background: isMenuOpen ? '#ff3333' : '#ffffff' }}
+   688→   688→              transition={quickSpring}
+   689→   689→            />
+   690→   690→          </motion.button>
+   691→   691→        )}
+   692→   692→      </motion.nav>
+   693→   693→
+   694→   694→      {/* ── MOBILE FULLSCREEN MENU ── */}
+   695→   695→      <AnimatePresence>
+   696→   696→        {isMenuOpen && (
+   697→   697→          <motion.div
+   698→   698→            style={{
+   699→   699→              position: 'fixed', inset: 0, zIndex: 40,
+   700→   700→              display: 'flex', flexDirection: 'column', justifyContent: 'center',
+   701→   701→              padding: '0 40px',
+   702→   702→              backgroundColor: '#000',
+   703→   703→            }}
+   704→   704→            initial={{ opacity: 0, clipPath: 'circle(0% at calc(100% - 36px) 36px)' }}
+   705→   705→            animate={{ opacity: 1, clipPath: 'circle(150% at calc(100% - 36px) 36px)' }}
+   706→   706→            exit={{ opacity: 0, clipPath: 'circle(0% at calc(100% - 36px) 36px)' }}
+   707→   707→            transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+   708→   708→          >
+   709→   709→            <div style={{ position: 'absolute', inset: 0, opacity: 0.04, backgroundImage: 'linear-gradient(rgba(255,51,51,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,51,51,1) 1px, transparent 1px)', backgroundSize: '60px 60px', pointerEvents: 'none' }} />
+   710→   710→            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', position: 'relative' }}>
+   711→   711→              {menuItems.map((item, i) => (
+   712→   712→                <MobileMenuLink key={item.label} href={item.href} index={i} onClick={() => setIsMenuOpen(false)}>
+   713→   713→                  {item.label}
+   714→   714→                </MobileMenuLink>
+   715→   715→              ))}
+   716→   716→            </div>
+   717→   717→            <motion.div
+   718→   718→              style={{ position: 'absolute', bottom: '40px', left: '40px', right: '40px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}
+   719→   719→              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+   720→   720→              transition={{ delay: 0.3 }}
+   721→   721→            >
+   722→   722→              <span style={{ fontSize: '10px', letterSpacing: '0.15em', color: '#444', fontFamily: "'Open Sans',sans-serif", textTransform: 'uppercase' }}>
+   723→   723→                Rohit Suthar · Portfolio
+   724→   724→              </span>
+   725→   725→              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+   726→   726→                <a href="tel:+917737438464" style={{ fontSize: '10px', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontFamily: "'Open Sans',sans-serif" }}>
+   727→   727→                  +91 7737438464
+   728→   728→                </a>
+   729→   729→                <a href="mailto:rohitsuthar410@gmail.com" style={{ fontSize: '10px', letterSpacing: '0.12em', color: '#ff3333', textDecoration: 'none', fontFamily: "'Open Sans',sans-serif" }}>
+   730→   730→                  Email →
+   731→   731→                </a>
+   732→   732→              </div>
+   733→   733→            </motion.div>
+   734→   734→          </motion.div>
+   735→   735→        )}
+   736→   736→      </AnimatePresence>
+   737→   737→
+   738→   738→      {/* ── MAIN CONTENT ── */}
+   739→   739→      <div
+   740→   740→        style={{
+   741→   741→          flex: 1,
+   742→   742→          display: 'flex',
+   743→   743→          alignItems: isMobile ? 'flex-start' : 'center',
+   744→   744→          justifyContent: 'center',
+   745→   745→          padding: isMobile ? '0 20px 32px' : '0 40px',
+   746→   746→          overflowY: isMobile ? 'auto' : 'hidden',
+   747→   747→        }}
+   748→   748→      >
+   749→   749→        <div
+   750→   750→          style={{
+   751→   751→            display: 'grid',
+   752→   752→            gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+   753→   753→            gap: isMobile ? '32px' : '48px',
+   754→   754→            alignItems: 'center',
+   755→   755→            maxWidth: '1100px',
+   756→   756→            width: '100%',
+   757→   757→          }}
+   758→   758→        >
+   759→   759→
+   760→   760→          {/* ── LEFT: text content ── */}
+   761→   761→          <motion.div
+   762→   762→            style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '20px' : '28px' }}
+   763→   763→            variants={baseVariants}
+   764→   764→            initial="hidden"
+   765→   765→            animate={['visible', 'idle']}
+   766→   766→          >
+   767→   767→            {/* Heading */}
+   768→   768→            <motion.h1
+   769→   769→              style={{
+   770→   770→                fontFamily: "'Open Sans', sans-serif",
+   771→   771→                fontWeight: 300,
+   772→   772→                fontSize: isSmallMobile ? '1.6rem' : isMobile ? '2rem' : 'clamp(1.75rem, 3.5vw, 2.8rem)',
+   773→   773→                letterSpacing: '-0.01em',
+   774→   774→                lineHeight: 1.25,
+   775→   775→                margin: 0,
+   776→   776→              }}
+   777→   777→              variants={baseVariants}
+   778→   778→            >
+   779→   779→              <TextReveal text="Aspiring " delay={0.4} className="block" />
+   780→   780→              <TextReveal text="Data " className="block" />
+   781→   781→              <TextReveal text="Engineer" delay={0.4} className="block" />
+   782→   782→            </motion.h1>
+   783→   783→
+   784→   784→            {/* Description */}
+   785→   785→            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '520px' }}>
+   786→   786→              <motion.p
+   787→   787→                style={{
+   788→   788→                  fontFamily: "'Open Sans', sans-serif", fontWeight: 300,
+   789→   789→                  fontSize: isSmallMobile ? '0.82rem' : isMobile ? '0.88rem' : 'clamp(0.88rem, 1.4vw, 1rem)',
+   790→   790→                  color: '#d1d5db', lineHeight: 1.8, margin: 0,
+   791→   791→                }}
+   792→   792→                variants={baseVariants}
+   793→   793→              >
+   794→   794→                <WordReveal text="As an AI/ML Engineer Intern at PAPASIDDHI Technologies, I built a voice-based conversational AI using Python and RAG, improving data quality and pipeline reliability with SQL, PySpark and Databricks. Now building my career in data engineering." />
+   795→   795→              </motion.p>
+   796→   796→              <motion.p
+   797→   797→                style={{
+   798→   798→                  fontFamily: "'Open Sans', sans-serif", fontWeight: 300,
+   799→   799→                  fontSize: isSmallMobile ? '0.76rem' : isMobile ? '0.8rem' : 'clamp(0.78rem, 1.1vw, 0.88rem)',
+   800→   800→                  color: '#9ca3af', lineHeight: 1.8, margin: 0,
+   801→   801→                }}
+   802→   802→                variants={baseVariants}
+   803→   803→              >
+   804→   804→               <WordReveal text="Through self-paced learning, I also built various apps and websites across different tech stacks and applied SEO. I communicate clearly and collaborate well." delay={0.3} />
+   805→   805→              </motion.p>
+   806→   806→            </div>
+   807→   807→
+   808→   808→            {/* Highlights */}
+   809→   809→            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+   810→   810→              <HighlightChip index={0} accent>Recent AI/ML Intern</HighlightChip>
+   811→   811→              <HighlightChip index={1}>Excellent Communication</HighlightChip>
+   812→   812→              <HighlightChip index={2}>Multi-Stack Builder</HighlightChip>
+   813→   813→              <HighlightChip index={3}>Apps, Websites & SEO</HighlightChip>
+   814→   814→            </div>
+   815→   815→
+   816→   816→            {/* Buttons */}
+   817→   817→            <motion.div
+   818→   818→              style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', paddingTop: '4px' }}
+   819→   819→              variants={baseVariants}
+   820→   820→            >
+   821→   821→              <SlideButton href="/projects" variant="solid" delay={0.45}>View Projects</SlideButton>
+   822→   822→              <SlideButton href="/about" variant="outline" delay={0.52}>About Me</SlideButton>
+   823→   823→              <SlideButton
+   824→   824→                href={CV_LINK}
+   825→   825→                variant="outline"
+   826→   826→                delay={0.59}
+   827→   827→                icon={<DownloadIcon />}
+   828→   828→                target="_blank"
+   829→   829→                rel="noopener noreferrer"
+   830→   830→                download
+   831→   831→              >
+   832→   832→                Download CV
+   833→   833→              </SlideButton>
+   834→   834→            </motion.div>
+   835→   835→
+   836→   836→            {/* Social Icons */}
+   837→   837→            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', paddingTop: '0px' }}>
+   838→   838→              {socialLinks.map((social, index) => (
+   839→   839→                <SocialIcon key={social.name} {...social} index={index} />
+   840→   840→              ))}
+   841→   841→            </div>
+   842→   842→          </motion.div>
+   843→   843→
+   844→   844→          {/* ── RIGHT: profile image ── */}
+   845→   845→          <motion.div
+   846→   846→            ref={imageRef}
+   847→   847→            style={{
+   848→   848→              display: 'flex',
+   849→   849→              justifyContent: isMobile ? 'center' : 'flex-end',
+   850→   850→              order: isMobile ? -1 : 0, // image on top on mobile
+   851→   851→            }}
+   852→   852→            variants={baseVariants}
+   853→   853→            initial="hidden"
+   854→   854→            animate={isImageInView ? ['visible', 'idle'] : 'hidden'}
+   855→   855→          >
+   856→   856→            <TiltCard>
+   857→   857→              <motion.div
+   858→   858→                style={{
+   859→   859→                  position: 'relative',
+   860→   860→                  backgroundColor: '#000',
+   861→   861→                  borderRadius: '16px',
+   862→   862→                  overflow: 'hidden',
+   863→   863→                  width: isSmallMobile ? '160px' : isMobile ? '200px' : '100%',
+   864→   864→                  maxWidth: isMobile ? '200px' : '340px',
+   865→   865→                }}
+   866→   866→              >
+   867→   867→                <div style={{ aspectRatio: '4/5', position: 'relative' }}>
+   868→   868→                  <img
+   869→   869→                    src={profileImage}
+   870→   870→                    alt="Rohit Suthar"
+   871→   871→                    style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(1)', display: 'block' }}
+   872→   872→                  />
+   873→   873→                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, black 0%, transparent 60%)', opacity: 0.85 }} />
+   874→   874→                  <div style={{ position: 'absolute', bottom: isMobile ? '16px' : '28px', left: 0, right: 0, textAlign: 'center' }}>
+   875→   875→                    <span style={{
+   876→   876→                      display: 'inline-block',
+   877→   877→                      padding: isMobile ? '3px 10px' : '4px 12px',
+   878→   878→                      background: '#fff',
+   879→   879→                      color: '#000',
+   880→   880→                      fontSize: isMobile ? '0.52rem' : '0.6rem',
+   881→   881→                      textTransform: 'uppercase',
+   882→   882→                      marginBottom: '6px',
+   883→   883→                      fontFamily: "'Open Sans', sans-serif",
+   884→   884→                      fontWeight: 400,
+   885→   885→                      letterSpacing: '0.12em',
+   886→   886→                    }}>
+   887→   887→                      Data & AI Engineering
+   888→   888→                    </span>
+   889→   889→                    <h2 style={{
+   890→   890→                      fontFamily: "'Open Sans', sans-serif",
+   891→   891→                      fontWeight: 300,
+   892→   892→                      fontSize: isMobile ? '0.85rem' : 'clamp(1rem, 2vw, 1.5rem)',
+   893→   893→                      letterSpacing: '0.2em',
+   894→   894→                      textTransform: 'uppercase',
+   895→   895→                      color: '#fff',
+   896→   896→                      margin: 0,
+   897→   897→                    }}>
+   898→   898→                      Rohit Suthar
+   899→   899→                    </h2>
+   900→   900→                  </div>
+   901→   901→                </div>
+   902→   902→              </motion.div>
+   903→   903→            </TiltCard>
+   904→   904→          </motion.div>
+   905→   905→
+   906→   906→        </div>
+   907→   907→      </div>
+   908→   908→    </div>
+   909→   909→  );
+   910→   910→};
+   911→   911→
+   912→   912→export default Hero;

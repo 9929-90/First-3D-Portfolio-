@@ -25,9 +25,9 @@ export default function Navbar() {
 
   return (
     <>
-      {/* scroll progress hairline */}
+      {/* scroll progress hairline — cyan → lime tip */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-[2px] bg-[#ccff00] z-[9500] origin-left"
+        className="fixed top-0 left-0 right-0 h-[2px] z-[9500] origin-left bg-gradient-to-r from-[#5c9ead] via-[#5277a5] to-[#ccff00]"
         style={{ scaleX: progress }}
       />
 
@@ -60,9 +60,9 @@ export default function Navbar() {
                   onClick={() => go(l.href)}
                   className="group relative font-mono2 text-[10.5px] tracking-[0.22em] uppercase text-[#b5b5b5] hover:text-white transition-colors py-2"
                 >
-                  <span className="text-[#ccff00]/70 mr-1 text-[8px] align-super">{l.index}</span>
+                  <span className="text-[#5c9ead]/80 mr-1 text-[8px] align-super">{l.index}</span>
                   {l.label}
-                  <span className="absolute left-0 bottom-0 w-full h-px bg-[#ccff00] scale-x-0 group-hover:scale-x-100 origin-right transition-transform duration-400 group-hover:origin-left" />
+                  <span className="absolute left-0 bottom-0 w-full h-px bg-[#5c9ead] scale-x-0 group-hover:scale-x-100 origin-right transition-transform duration-400 group-hover:origin-left" />
                 </button>
               </li>
             ))}
@@ -82,7 +82,7 @@ export default function Navbar() {
               onClick={() => setOpen(!open)}
               aria-label="Toggle menu"
               aria-expanded={open}
-              className="lg:hidden relative w-10 h-10 flex flex-col items-center justify-center gap-[5px] border border-white/15 rounded-full hover:border-[#ccff00]/60 transition-colors"
+              className="lg:hidden relative w-10 h-10 flex flex-col items-center justify-center gap-[5px] border border-white/15 rounded-full hover:border-[#5c9ead]/60 transition-colors"
             >
               <span
                 className={`block w-4 h-px bg-white transition-transform duration-300 ${open ? "rotate-45 translate-y-[3px]" : ""}`}
@@ -114,7 +114,7 @@ export default function Navbar() {
                 onClick={() => go(l.href)}
                 className="flex items-baseline gap-4 py-2 text-left"
               >
-                <span className="font-mono2 text-[10px] text-[#ccff00]">{l.index}</span>
+                <span className="font-mono2 text-[10px] text-[#5c9ead]">{l.index}</span>
                 <span className="font-display font-bold text-[13vw] leading-[1.05] tracking-tight text-[#ededed]">
                   {l.label}
                 </span>
@@ -129,7 +129,7 @@ export default function Navbar() {
           className="absolute bottom-10 left-8 right-8 flex justify-between font-mono2 text-[9px] tracking-[0.25em] uppercase text-[#8f8f8f]"
         >
           <span>{IDENTITY.location}</span>
-          <span className="text-[#ccff00]">Open to work</span>
+          <span className="text-[#5c9ead]">Open to work</span>
         </motion.div>
       </motion.div>
     </>
