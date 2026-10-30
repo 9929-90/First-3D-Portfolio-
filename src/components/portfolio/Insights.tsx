@@ -1,12 +1,35 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { INSIGHTS } from "@/lib/data";
+import { useRef, useState } from "react";
+import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+import { INSIGHTS, type Insight } from "@/lib/data";
+import { BLOGS, type Blog } from "@/lib/blogs";
 import { ContourField } from "./layers";
+import ArticleReader from "./ArticleReader";
+
+/* Full essays from the original portfolio, matched to the 12 titles.
+   Titles are compared with normalized quotes/apostrophes; the source
+   order is identical, so the index is a safe fallback. */
+const norm = (s: string) =>
+  s.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"');
+
+const ARTICLES: Blog[] = INSIGHTS.map((ins, i) => {
+  const src =
+    BLOGS.find((b) => norm(b.title) === norm(ins.title)) ?? BLOGS[i];
+  return {
+    id: i + 1,
+    number: String(i + 1).padStart(2, "0"),
+    tag: ins.tag,
+    title: ins.title,
+    summary: src?.summary ?? "",
+    readTime: ins.readTime,
+    content: src?.content ?? "",
+  };
+});
 
 export default function Insights() {
   const sectionRef = useRef<HTMLElement>(null);
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
@@ -39,7 +62,7 @@ export default function Insights() {
       </div>
 
       <div className="relative z-10">
-        {INSIGHTS.map((ins, i) => (
+        {ARTICLES.map((ins: Insight & Blog, i) => (
           <motion.article
             key={ins.title}
             initial={{ opacity: 0, y: 18 }}
@@ -48,6 +71,16 @@ export default function Insights() {
             transition={{ duration: 0.5, delay: Math.min(i * 0.04, 0.3) }}
             className="group relative border-t border-white/10 last:border-b cursor-pointer overflow-hidden"
             data-cursor="Read"
+            role="button"
+            tabIndex={0}
+            aria-label={`Read essay: ${ins.title}`}
+            onClick={() => setOpenIdx(i)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setOpenIdx(i);
+              }
+            }}
           >
             {/* hover fill — quiet silver wash instead of loud accent */}
             <div className="absolute inset-0 bg-[#A9B2BC]/[0.05] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
@@ -57,7 +90,7 @@ export default function Insights() {
                 {String(i + 1).padStart(2, "0")}
               </span>
 
-              <h3 className="flex-1 min-w-0 font-display font-medium text-lg md:text-[26px] tracking-tight text-[#E6E9ED] group-hover:text-white group-hover:translate-x-1 transition-all duration-400 truncate">
+              <h3 className="flex-1 min-w-0 font-display font-medium text-lg md:text-[26px] leading-snug tracking-tight text-[#E6E9ED] group-hover:text-white group-hover:translate-x-1 transition-all duration-400">
                 {ins.title}
               </h3>
 
@@ -79,6 +112,19 @@ export default function Insights() {
           </motion.article>
         ))}
       </div>
+
+      {/* full-essay reader overlay */}
+      <AnimatePresence>
+        {openIdx !== null && (
+          <ArticleReader
+            key="article-reader"
+            articles={ARTICLES}
+            index={openIdx}
+            onClose={() => setOpenIdx(null)}
+            onNavigate={setOpenIdx}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 }

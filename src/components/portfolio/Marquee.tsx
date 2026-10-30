@@ -17,10 +17,10 @@ export default function Marquee() {
       <div className="flex w-max animate-marquee whitespace-nowrap will-change-transform">
         {items.map((s, i) => (
           <span key={i} className="flex items-center">
-            <span className="font-mono2 text-[11px] md:text-xs tracking-[0.3em] uppercase px-7 text-[#A9B2BC]/55">
+            <span className="font-mono2 text-[11px] md:text-xs tracking-[0.3em] uppercase px-7 text-[#A9B2BC]">
               {s}
             </span>
-            <span className="text-[#536C83]/50 text-[9px]">{"//"}</span>
+            <span className="text-[#46586A] text-[9px]">{"//"}</span>
           </span>
         ))}
       </div>

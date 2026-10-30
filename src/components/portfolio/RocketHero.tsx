@@ -39,7 +39,7 @@ function Anno({
   return (
     <div className={`absolute pointer-events-none select-none ${className ?? ""}`}>
       <div className="tech-anno flex items-center gap-2">
-        <span className="text-[#E6E9ED]/85">{index}</span>
+        <span className="text-[#E6E9ED]">{index}</span>
         <span className="block w-10 tech-anno__line" />
         <span className="text-[#A9B2BC]">{title}</span>
       </div>

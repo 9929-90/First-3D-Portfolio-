@@ -1,23 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
+/* single typographic identity — the blog-heading font (Space Grotesk)
+   is the one family used across the entire portfolio. */
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
-});
-
-const inter = Inter({
-  variable: "--font-body",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -67,7 +57,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <body
-        className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased bg-[#08090B] text-[#E6E9ED]`}
+        className={`${spaceGrotesk.variable} antialiased bg-[#08090B] text-[#E6E9ED]`}
       >
         {children}
       </body>

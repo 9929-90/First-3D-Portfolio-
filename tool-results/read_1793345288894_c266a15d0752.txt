@@ -1,0 +1,779 @@
+     1→import { useState } from 'react';
+     2→import { motion, AnimatePresence } from 'framer-motion';
+     3→import { Helmet } from 'react-helmet-async';
+     4→
+     5→// ─── BLOG DATA ────────────────────────────────────────────────────────────────
+     6→
+     7→const blogs = [
+     8→  {
+     9→    id: 1,
+    10→    number: '01',
+    11→    tag: 'Architecture',
+    12→    title: 'Why System Design Still Humbles Me',
+    13→    summary: 'System design isn\'t just about drawing boxes. It\'s about making decisions under incomplete information.',
+    14→    rating: 4.5,
+    15→    readTime: '4 min read',
+    16→    accent: '#ff3333',
+    17→    content: `There's a moment in every system design interview — or in every real project — where you realize you've been thinking too small. You sketch a box that says "database" and someone asks: "What happens when it gets 10 million writes a day?" That pause? That's where real engineering lives.
+    18→
+    19→System design humbled me early. I built AapnoKaam with a single PostgreSQL instance and thought I was done. Then I started thinking — what if this scaled? What if 10,000 workers were searching simultaneously using the Haversine query I wrote? Suddenly that elegant SQL felt fragile.
+    20→
+    21→The core of system design isn't memorizing CAP theorem or knowing when to use Kafka. It's about trade-offs. Every decision you make — SQL vs NoSQL, monolith vs microservices, sync vs async — has a cost on the other side. The best engineers aren't the ones who know all the patterns. They're the ones who can explain *why* they chose one over another given the constraints.
+    22→
+    23→Start with the problem. What are the read/write ratios? What's the SLA? What breaks first under load? Work backwards from failure, not forwards from enthusiasm.
+    24→
+    25→The boxes you draw don't matter. The reasoning behind them does.
+    26→
+    27→A system that's "good enough" and ships is infinitely better than a perfect architecture that lives in a Notion doc. Design for today's load. Build extension points for tomorrow's. And never forget — the most expensive line in any distributed system is the one you added before you needed it.`,
+    28→  },
+    29→  {
+    30→    id: 2,
+    31→    number: '02',
+    32→    tag: 'AI / Prompting',
+    33→    title: 'Prompting Is a Skill, Not a Trick',
+    34→    summary: 'Most people treat prompts like Google searches. The ones who get real value treat them like conversations.',
+    35→    rating: 5,
+    36→    readTime: '3 min read',
+    37→    accent: '#60a5fa',
+    38→    content: `I used to type prompts like I was Googling. Short, vague, hoping the model would just figure it out. I'd get mediocre responses and blame the AI. Then I started treating it like briefing a smart colleague — and everything changed.
+    39→
+    40→The model doesn't know your context unless you give it. It doesn't know you're a backend developer building a Spring Boot service for a multi-tenant SaaS. It doesn't know you want clean, production-ready code without unnecessary abstractions. It assumes the median case unless you tell it otherwise.
+    41→
+    42→Here's what actually works: role + context + constraint + output format. "You are a senior Java engineer. I'm building a distributed SaaS with Spring Boot 3 and PostgreSQL. Generate a service layer for user onboarding that handles duplicate emails gracefully. Return only the service class, no explanation." That prompt gets you something you can actually use.
+    43→
+    44→Chain your prompts. Start broad, then narrow. Ask it to critique its own output. Say "what edge cases did you miss?" The model is surprisingly good at catching its own blind spots when you ask directly.
+    45→
+    46→And stop using prompts as a crutch for thinking. The best use of an AI prompt is to accelerate a decision you've already half-made in your head — not to outsource the thinking entirely. Use it to draft, validate, explore — not to replace the judgment that comes from actually building things.
+    47→
+    48→Prompting well is a leverage multiplier. A bad prompt wastes a good model. A good prompt makes you dangerous.`,
+    49→  },
+    50→  {
+    51→    id: 3,
+    52→    number: '03',
+    53→    tag: 'Hardware / ML',
+    54→    title: 'CPU, GPU, TPU, NPU — What Actually Matters',
+    55→    summary: 'Four letters. Wildly different purposes. Here\'s how to think about them without the marketing noise.',
+    56→    rating: 4,
+    57→    readTime: '5 min read',
+    58→    accent: '#a78bfa',
+    59→    content: `Everyone's throwing these acronyms around and half the time they don't know what they mean past "GPU = fast for AI." Let me break it down in a way that actually sticks.
+    60→
+    61→A CPU is a generalist. It's brilliant at sequential tasks, branching logic, OS management — anything that requires flexibility. Your Spring Boot server runs on a CPU. Your database query planner runs on a CPU. It's designed to handle one complex thing at a time, really well.
+    62→
+    63→A GPU was built for graphics — rendering thousands of pixels in parallel. Then the ML world noticed something: training neural networks is just matrix multiplication at massive scale. The GPU's parallel architecture fits perfectly. So it got hijacked for AI. Today an NVIDIA A100 runs billions of floating-point operations per second. It's overkill for your laptop but essential for training LLMs.
+    64→
+    65→A TPU (Tensor Processing Unit) is Google's custom silicon designed specifically for tensor operations — the math inside neural networks. It's even more specialized than a GPU. You can't run general code on it, but for training and inference on large models, it destroys everything else on throughput-per-watt.
+    66→
+    67→An NPU (Neural Processing Unit) is what's showing up in phones and laptops now — Apple's Neural Engine, Qualcomm's AI Engine. It's a small, power-efficient chip that handles on-device inference. Running face unlock, voice detection, real-time translation — without draining your battery.
+    68→
+    69→The pattern: the more specialized the chip, the faster and more efficient it is at its specific task — and the less flexible it becomes for everything else. Know your workload before picking your hardware.`,
+    70→  },
+    71→  {
+    72→    id: 4,
+    73→    number: '04',
+    74→    tag: 'Full-Stack',
+    75→    title: 'What "Full-Stack" Actually Means in 2025',
+    76→    summary: 'The title has been watered down. Here\'s what it really takes to own both ends of a production system.',
+    77→    rating: 4.5,
+    78→    readTime: '4 min read',
+    79→    accent: '#4ade80',
+    80→    content: `Full-stack used to mean HTML + PHP. Then it meant React + Node. Now it means something much heavier — and most people using the title aren't carrying the full weight of it.
+    81→
+    82→A real full-stack developer in 2025 isn't just someone who can write a React component and a REST endpoint. It's someone who can reason about the entire system: database schema design, API contract design, frontend state management, auth flows, deployment pipelines, and observability.
+    83→
+    84→When I built SQLPilot, I had to think about every layer. The Gemini AI integration on the backend. The JWT + role-based access. The Redis caching layer so we're not hammering the AI API on repeated queries. The React frontend with paginated history. The Docker container. The Render deployment. Netlify for the frontend. One person, every layer.
+    85→
+    86→That's not a flex — that's what the job actually is when you're building solo or in a small team.
+    87→
+    88→The trap most devs fall into is getting comfortable in one layer and pretending the other one doesn't exist. Frontend devs who've never thought about N+1 queries. Backend devs who ship APIs without thinking about the loading states they force on the UI. Both are half the picture.
+    89→
+    90→The honest truth: being full-stack means being willing to be uncomfortable everywhere. You won't be the best at any one thing. But you'll be the person who can ship something real without waiting on anyone else. In a world of slow teams and long PR queues, that's genuinely powerful.`,
+    91→  },
+    92→  {
+    93→    id: 5,
+    94→    number: '05',
+    95→    tag: 'Career',
+    96→    title: 'FAANG Interviews Are a Game — Learn the Rules',
+    97→    summary: 'Talent alone won\'t get you in. You need to understand what they\'re actually testing for.',
+    98→    rating: 5,
+    99→    readTime: '5 min read',
+   100→    accent: '#fbbf24',
+   101→    content: `Here's the uncomfortable truth about FAANG interviews: they're not testing if you're a good engineer. They're testing if you can perform well on a specific type of problem, under time pressure, while narrating your thoughts out loud. Those are learnable skills.
+   102→
+   103→The DSA round exists not because you'll be writing Dijkstra's at Google, but because it's a standardized filter. You learn the patterns — sliding window, two pointers, BFS/DFS, dynamic programming, heap problems — and then you drill them until they become reflexes. LeetCode medium is the bar. Hard problems are bonus.
+   104→
+   105→But most people underestimate the system design round. This is where senior roles are won or lost. You need to be able to walk through — clearly and confidently — how you'd design something like a URL shortener, a notification service, or a ride-sharing backend. The interviewer wants to see how you think, how you handle ambiguity, and whether you understand trade-offs.
+   106→
+   107→Behavioral rounds are underrated. STAR format isn't optional, it's mandatory. Have 6-8 stories ready that you can reshape for different questions. Conflict with a teammate. A project that failed. A time you pushed back on requirements. These stories need to sound natural, not rehearsed.
+   108→
+   109→One thing nobody tells you: mock interviews are more valuable than solo practice. You can solve 300 LeetCode problems alone and still freeze when someone is watching. Practice performing, not just solving.
+   110→
+   111→The game is learnable. The timeline is 3-6 months of focused prep. Don't let the mystique of these companies convince you it's out of reach. It's a skill set, and skill sets are buildable.`,
+   112→  },
+   113→  {
+   114→    id: 6,
+   115→    number: '06',
+   116→    tag: 'Dev Culture',
+   117→    title: 'Vibe Coding Will Break Your Production',
+   118→    summary: 'Shipping fast on vibes feels amazing — until 3am when the alerts start firing.',
+   119→    rating: 4,
+   120→    readTime: '3 min read',
+   121→    accent: '#f97316',
+   122→    content: `There's a certain energy you get when everything is flowing. The code is writing itself, the feature works on the first try, and you're pushing to main at midnight because you're in the zone. I've been there. It feels like flying.
+   123→
+   124→And then, two weeks later, something breaks in a way you didn't expect. And you look at the code you wrote that night and it's confident, it's fast, and it has no error handling. No edge case coverage. A transaction that never rolls back. An async call with no timeout.
+   125→
+   126→Vibe coding — shipping on momentum and intuition without slowing down to think — is genuinely fun and genuinely dangerous. The output looks clean. The logic is usually right for the happy path. But production isn't the happy path. Production is the user who uploads a 500MB file. The network timeout that happens once a week. The race condition that only appears under concurrent load.
+   127→
+   128→The fix isn't to stop coding with energy. It's to add one ritual: after the vibe session, do a slow read. Go through every function you wrote and ask — what breaks this? What if the input is null? What if the DB call fails halfway? What if two users hit this endpoint at the same time?
+   129→
+   130→I built a rule for myself: never push a vibe session to prod on the same day. Sleep on it. The confidence you felt at midnight looks different at 9am.
+   131→
+   132→Stability isn't the opposite of speed. It's what lets you move fast without lying awake at night.`,
+   133→  },
+   134→  {
+   135→  id: 4,
+   136→  number: '04',
+   137→  tag: 'AI / Software',
+   138→  title: 'Vibe Coding Is Real — And It’s Changing Engineering',
+   139→  summary: 'Half the internet thinks AI will replace developers. The other half is shipping faster than ever with it.',
+   140→  rating: 5,
+   141→  readTime: '6 min read',
+   142→  accent: '#60a5fa',
+   143→  content: `A year ago people used AI for autocomplete. Today people are building entire SaaS products with a prompt window open 24/7.
+   144→
+   145→The industry calls it "vibe coding" now — describing what you want in plain English and letting models generate massive chunks of the implementation. Sounds fake until you watch someone scaffold a React frontend, build APIs, write SQL migrations, configure Docker, and deploy to Vercel in a single afternoon.
+   146→
+   147→But here's the thing nobody says loud enough: AI didn't remove engineering. It removed friction.
+   148→
+   149→Good developers still win because they know architecture, debugging, scalability, edge cases, security, and product thinking. AI can generate code fast. It still struggles with system-level reasoning across large projects. That's where humans step in.
+   150→
+   151→The dangerous part is beginners thinking generated code equals production-ready software. It doesn't. Most AI-generated apps collapse the second real users hit them. Memory leaks. Race conditions. Broken auth. Zero observability. No separation of concerns.
+   152→
+   153→The developers growing fastest right now are the ones treating AI like a junior engineer that works insanely fast but needs supervision. They delegate repetitive implementation and spend more time on decisions that actually matter.
+   154→
+   155→Coding is shifting from typing syntax to directing systems. The skill ceiling didn't disappear. It just moved upward.`
+   156→},
+   157→{
+   158→  id: 5,
+   159→  number: '05',
+   160→  tag: 'Cloud / Backend',
+   161→  title: 'Why Every Startup Suddenly Wants Microservices',
+   162→  summary: 'Spoiler: half of them absolutely should not.',
+   163→  rating: 4,
+   164→  readTime: '5 min read',
+   165→  accent: '#fb7185',
+   166→  content: `Somewhere along the way, microservices became a status symbol.
+   167→
+   168→A startup with 3 developers and 200 users somehow ends up with 14 services, Kubernetes clusters, event buses, distributed tracing, and enough YAML to summon a demon. Meanwhile a monolith would've handled the workload perfectly.
+   169→
+   170→Microservices solve a real problem: scale. Not just traffic scale — team scale. When dozens of teams work on independent domains, splitting systems makes coordination easier. Payments can evolve separately from notifications. Search can deploy independently from auth.
+   171→
+   172→But distributed systems come with a tax.
+   173→
+   174→Now your "simple API call" becomes network communication. Failures become unpredictable. Debugging requires tracing across services. Deployment pipelines multiply. Infrastructure costs rise. Local development becomes painful.
+   175→
+   176→The irony? Companies like Amazon and Netflix earned microservices through years of scaling pain. Most modern startups copy the architecture before they copy the user growth.
+   177→
+   178→A well-structured monolith is still one of the best ways to build software fast. Clean modular boundaries. Single deployment unit. Easier debugging. Lower operational complexity.
+   179→
+   180→People underestimate how far a monolith can scale when engineered properly. Instagram handled millions of users with a surprisingly compact backend for years.
+   181→
+   182→Architecture isn't about sounding advanced. It's about choosing the minimum complexity required for your current problem.`
+   183→},
+   184→{
+   185→  id: 6,
+   186→  number: '06',
+   187→  tag: 'Cybersecurity',
+   188→  title: 'The Scariest Hacker Isn’t Breaking In Anymore',
+   189→  summary: 'Modern attacks target humans first, systems second.',
+   190→  rating: 5,
+   191→  readTime: '6 min read',
+   192→  accent: '#f87171',
+   193→  content: `People imagine hackers as hoodie-wearing geniuses brute-forcing passwords in dark rooms. Reality is much less cinematic — and way more dangerous.
+   194→
+   195→Most modern breaches start with social engineering.
+   196→
+   197→A fake login page. A convincing email. A Slack message from "IT support." A deepfake voice call pretending to be a manager asking for credentials. The attack surface today isn't just software. It's human psychology.
+   198→
+   199→AI made this worse fast.
+   200→
+   201→Phishing emails used to be laughably bad. Broken grammar. Weird formatting. Now LLMs generate near-perfect corporate communication in seconds. Deepfake tools clone voices from minutes of audio. Scam operations became scalable.
+   202→
+   203→The crazy part? Even highly technical people fall for these attacks under pressure. Because security failures usually happen when humans are distracted, rushed, or overloaded.
+   204→
+   205→Meanwhile companies obsess over buying expensive security tools while ignoring basic operational hygiene: weak MFA policies, leaked API keys, exposed S3 buckets, reused passwords, unpatched dependencies.
+   206→
+   207→Cybersecurity isn't one giant shield. It's layers.
+   208→
+   209→Good security feels annoying. That's how you know it's working. Rate limits. Hardware keys. Approval flows. Session expiration. Audit logs. Least-privilege access. These tiny frictions stop catastrophic failures.
+   210→
+   211→The future of security won't just be about stronger encryption. It'll be about designing systems that assume humans will eventually make mistakes.`
+   212→},
+   213→{
+   214→  id: 7,
+   215→  number: '07',
+   216→  tag: 'AI / Hardware',
+   217→  title: 'Why AI Companies Are Obsessed With Energy Now',
+   218→  summary: 'The next bottleneck in AI might not be intelligence. It might be electricity.',
+   219→  rating: 5,
+   220→  readTime: '5 min read',
+   221→  accent: '#34d399',
+   222→  content: `Training frontier AI models sounds futuristic until you look at the electricity bill.
+   223→
+   224→Modern LLM training runs across thousands of GPUs simultaneously. Entire data centers consume insane amounts of power just to train one generation of models. Then comes inference — millions of users querying those models every day.
+   225→
+   226→AI isn't just competing for better algorithms anymore. It's competing for energy infrastructure.
+   227→
+   228→That's why companies are racing to build specialized chips, optimize inference engines, and reduce parameter inefficiencies. Every millisecond saved at scale becomes massive operational savings.
+   229→
+   230→People think AI progress is only about bigger models. The real innovation now is efficiency.
+   231→
+   232→Quantization. Sparse architectures. Mixture-of-experts systems. Better caching. Smaller distilled models. Engineers are trying to squeeze maximum intelligence out of minimum compute.
+   233→
+   234→Even geopolitics entered the picture. Countries now treat semiconductor manufacturing like strategic infrastructure because advanced AI depends on advanced chips.
+   235→
+   236→The fascinating shift is this: software companies are suddenly caring about physics.
+   237→
+   238→Cooling systems matter. Power delivery matters. Chip fabrication matters. Data center geography matters. The future of AI won't just be decided by researchers. It'll also be shaped by whoever can sustain the compute required to run intelligence at planetary scale.`
+   239→},
+   240→{
+   241→  id: 8,
+   242→  number: '08',
+   243→  tag: 'Frontend / UX',
+   244→  title: 'People Don’t Want More Features Anymore',
+   245→  summary: 'Most apps are bloated. The winners now feel invisible.',
+   246→  rating: 4,
+   247→  readTime: '4 min read',
+   248→  accent: '#fbbf24',
+   249→  content: `For years the software industry treated feature count like a flex.
+   250→
+   251→More integrations. More dashboards. More toggles. More AI buttons randomly glued onto interfaces. Somewhere along the way, apps became exhausting.
+   252→
+   253→Now users are moving toward products that feel calm.
+   254→
+   255→The best software today reduces cognitive load. Fast load times. Clear navigation. Predictable interactions. Minimal friction between intention and action.
+   256→
+   257→That's why products like Notion, Linear, Raycast, Arc, and modern AI tools exploded. They're not necessarily simple under the hood — they're disciplined about what the user experiences.
+   258→
+   259→Performance became part of UX too.
+   260→
+   261→Nobody wants a web app consuming 2GB RAM just to open a settings page. Users subconsciously associate speed with quality. Tiny delays destroy trust faster than people realize.
+   262→
+   263→The funniest part? Most product problems aren't technical limitations. They're prioritization failures. Teams keep shipping because they can, not because users need it.
+   264→
+   265→Great UX design is subtraction.
+   266→
+   267→Every unnecessary popup removed. Every click eliminated. Every confusing state simplified. The highest level of product design often looks deceptively obvious after it's done.
+   268→
+   269→Good software feels effortless. That's incredibly hard to engineer.`
+   270→},
+   271→{
+   272→  id: 9,
+   273→  number: '09',
+   274→  tag: 'Future Tech',
+   275→  title: 'The Real Race in Tech Isn’t AI vs Humans',
+   276→  summary: 'It’s centralized platforms versus individual creators.',
+   277→  rating: 5,
+   278→  readTime: '6 min read',
+   279→  accent: '#818cf8',
+   280→  content: `Technology quietly shifted power back toward individuals.
+   281→
+   282→One developer can now launch a global SaaS product. One creator can build a media company. One engineer with AI tools can outperform entire small teams from a few years ago.
+   283→
+   284→The leverage is absurd.
+   285→
+   286→Cloud infrastructure removed hardware barriers. Open-source removed knowledge barriers. AI is removing execution barriers. Distribution through social media removed marketing gatekeepers.
+   287→
+   288→Which means the modern advantage isn't access anymore. It's clarity and consistency.
+   289→
+   290→The people winning right now are combining multiple skills instead of specializing too narrowly. Coding + design. Engineering + storytelling. AI + product intuition. Technical depth + audience building.
+   291→
+   292→Meanwhile giant platforms are fighting to stay dominant by locking ecosystems tighter — app stores, proprietary APIs, subscription ecosystems, cloud dependencies.
+   293→
+   294→That's the hidden tension shaping the industry.
+   295→
+   296→Independent builders want ownership and speed. Platforms want retention and control. AI accelerated both sides simultaneously.
+   297→
+   298→The next generation of successful tech people probably won't fit traditional job titles cleanly. They'll build products, market them, automate workflows, design experiences, manage communities, and use AI as force multiplication across everything.
+   299→
+   300→The line between developer, founder, creator, and operator is collapsing fast.`
+   301→}
+   302→];
+   303→
+   304→// ─── STAR RATING ──────────────────────────────────────────────────────────────
+   305→
+   306→const StarRating = ({ rating, size = 14 }) => {
+   307→  const full = Math.floor(rating);
+   308→  const half = rating % 1 >= 0.5;
+   309→  return (
+   310→    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+   311→      {Array.from({ length: 5 }).map((_, i) => {
+   312→        const filled = i < full;
+   313→        const isHalf = !filled && i === full && half;
+   314→        return (
+   315→          <svg key={i} width={size} height={size} viewBox="0 0 24 24" fill="none">
+   316→            {isHalf ? (
+   317→              <>
+   318→                <defs>
+   319→                  <linearGradient id={`half-${i}`} x1="0" x2="1" y1="0" y2="0">
+   320→                    <stop offset="50%" stopColor="#fbbf24" />
+   321→                    <stop offset="50%" stopColor="rgba(255,255,255,0.1)" />
+   322→                  </linearGradient>
+   323→                </defs>
+   324→                <polygon
+   325→                  points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
+   326→                  fill={`url(#half-${i})`}
+   327→                  stroke="#fbbf24"
+   328→                  strokeWidth="1"
+   329→                />
+   330→              </>
+   331→            ) : (
+   332→              <polygon
+   333→                points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
+   334→                fill={filled ? '#fbbf24' : 'rgba(255,255,255,0.08)'}
+   335→                stroke={filled ? '#fbbf24' : 'rgba(255,255,255,0.15)'}
+   336→                strokeWidth="1"
+   337→              />
+   338→            )}
+   339→          </svg>
+   340→        );
+   341→      })}
+   342→      <span style={{
+   343→        marginLeft: '5px', fontSize: '0.7rem',
+   344→        fontFamily: 'monospace', color: 'rgba(255,255,255,0.35)',
+   345→        letterSpacing: '0.05em',
+   346→      }}>
+   347→        {rating.toFixed(1)}
+   348→      </span>
+   349→    </div>
+   350→  );
+   351→};
+   352→
+   353→// ─── BLOG CARD ────────────────────────────────────────────────────────────────
+   354→
+   355→const BlogCard = ({ blog, index, onClick }) => {
+   356→  const [hovered, setHovered] = useState(false);
+   357→
+   358→  return (
+   359→    <motion.div
+   360→      initial={{ opacity: 0, y: 24 }}
+   361→      animate={{ opacity: 1, y: 0 }}
+   362→      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
+   363→      onClick={() => onClick(blog)}
+   364→      onMouseEnter={() => setHovered(true)}
+   365→      onMouseLeave={() => setHovered(false)}
+   366→      style={{
+   367→        background: hovered
+   368→          ? 'rgba(255,255,255,0.04)'
+   369→          : 'rgba(255,255,255,0.018)',
+   370→        border: hovered
+   371→          ? `1px solid ${blog.accent}55`
+   372→          : '1px solid rgba(255,255,255,0.07)',
+   373→        padding: '1.75rem',
+   374→        cursor: 'pointer',
+   375→        transition: 'background 0.3s, border-color 0.3s, transform 0.3s',
+   376→        transform: hovered ? 'translateY(-3px)' : 'translateY(0)',
+   377→        position: 'relative',
+   378→        overflow: 'hidden',
+   379→        display: 'flex',
+   380→        flexDirection: 'column',
+   381→        gap: '1rem',
+   382→      }}
+   383→    >
+   384→      {/* Accent line at top */}
+   385→      <div style={{
+   386→        position: 'absolute',
+   387→        top: 0, left: 0, right: 0,
+   388→        height: '2px',
+   389→        background: hovered ? blog.accent : 'transparent',
+   390→        transition: 'background 0.3s',
+   391→      }} />
+   392→
+   393→      {/* Watermark number */}
+   394→      <div style={{
+   395→        position: 'absolute',
+   396→        bottom: '-1rem', right: '1rem',
+   397→        fontSize: '6rem', fontWeight: 800,
+   398→        fontFamily: "'Open Sans', sans-serif",
+   399→        color: hovered ? `${blog.accent}08` : 'rgba(255,255,255,0.025)',
+   400→        lineHeight: 1, userSelect: 'none',
+   401→        letterSpacing: '-0.05em',
+   402→        transition: 'color 0.3s',
+   403→        pointerEvents: 'none',
+   404→      }}>
+   405→        {blog.number}
+   406→      </div>
+   407→
+   408→      {/* Top row */}
+   409→      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+   410→        <span style={{
+   411→          fontSize: '0.65rem', letterSpacing: '0.22em', textTransform: 'uppercase',
+   412→          fontFamily: 'monospace', color: blog.accent,
+   413→          border: `1px solid ${blog.accent}33`, padding: '3px 9px',
+   414→        }}>
+   415→          {blog.tag}
+   416→        </span>
+   417→        <span style={{
+   418→          fontSize: '0.65rem', fontFamily: 'monospace',
+   419→          color: 'rgba(255,255,255,0.25)', letterSpacing: '0.08em',
+   420→        }}>
+   421→          {blog.readTime}
+   422→        </span>
+   423→      </div>
+   424→
+   425→      {/* Number + title */}
+   426→      <div>
+   427→        <div style={{
+   428→          fontSize: '0.65rem', fontFamily: 'monospace',
+   429→          color: hovered ? blog.accent : '#444',
+   430→          letterSpacing: '0.1em', marginBottom: '0.45rem',
+   431→          transition: 'color 0.3s',
+   432→        }}>
+   433→          {blog.number}
+   434→        </div>
+   435→        <h3 style={{
+   436→          margin: 0,
+   437→          fontSize: 'clamp(1rem, 2vw, 1.2rem)',
+   438→          fontWeight: 400,
+   439→          color: hovered ? '#fff' : 'rgba(255,255,255,0.85)',
+   440→          fontFamily: "'Open Sans', sans-serif",
+   441→          letterSpacing: '-0.01em',
+   442→          lineHeight: 1.3,
+   443→          transition: 'color 0.3s',
+   444→        }}>
+   445→          {blog.title}
+   446→        </h3>
+   447→      </div>
+   448→
+   449→      {/* Summary */}
+   450→      <p style={{
+   451→        margin: 0, fontSize: '0.86rem',
+   452→        color: 'rgba(255,255,255,0.5)',
+   453→        fontFamily: "'Open Sans', sans-serif",
+   454→        lineHeight: 1.7,
+   455→        flex: 1,
+   456→      }}>
+   457→        {blog.summary}
+   458→      </p>
+   459→
+   460→      {/* Footer: stars + read more */}
+   461→      <div style={{
+   462→        display: 'flex', alignItems: 'center',
+   463→        justifyContent: 'space-between', paddingTop: '0.5rem',
+   464→        borderTop: '1px solid rgba(255,255,255,0.05)',
+   465→      }}>
+   466→        <StarRating rating={blog.rating} />
+   467→        <span style={{
+   468→          fontSize: '0.72rem', fontFamily: 'monospace',
+   469→          color: hovered ? blog.accent : 'rgba(255,255,255,0.3)',
+   470→          letterSpacing: '0.1em', textTransform: 'uppercase',
+   471→          transition: 'color 0.3s',
+   472→        }}>
+   473→          Read →
+   474→        </span>
+   475→      </div>
+   476→    </motion.div>
+   477→  );
+   478→};
+   479→
+   480→// ─── MODAL ────────────────────────────────────────────────────────────────────
+   481→
+   482→const BlogModal = ({ blog, onClose }) => {
+   483→  if (!blog) return null;
+   484→
+   485→  return (
+   486→    <AnimatePresence>
+   487→      <motion.div
+   488→        key="overlay"
+   489→        initial={{ opacity: 0 }}
+   490→        animate={{ opacity: 1 }}
+   491→        exit={{ opacity: 0 }}
+   492→        transition={{ duration: 0.25 }}
+   493→        onClick={onClose}
+   494→        style={{
+   495→          position: 'fixed', inset: 0,
+   496→          background: 'rgba(0,0,0,0.82)',
+   497→          backdropFilter: 'blur(6px)',
+   498→          zIndex: 1000,
+   499→          display: 'flex', alignItems: 'center', justifyContent: 'center',
+   500→          padding: '1.5rem',
+   501→        }}
+   502→      >
+   503→        <motion.div
+   504→          key="modal"
+   505→          initial={{ opacity: 0, scale: 0.94, y: 20 }}
+   506→          animate={{ opacity: 1, scale: 1, y: 0 }}
+   507→          exit={{ opacity: 0, scale: 0.94, y: 20 }}
+   508→          transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+   509→          onClick={e => e.stopPropagation()}
+   510→          style={{
+   511→            background: '#0f0f0f',
+   512→            border: `1px solid ${blog.accent}33`,
+   513→            maxWidth: '680px',
+   514→            width: '100%',
+   515→            maxHeight: '88vh',
+   516→            overflowY: 'auto',
+   517→            position: 'relative',
+   518→            boxShadow: `0 0 80px ${blog.accent}15, 0 32px 64px rgba(0,0,0,0.6)`,
+   519→          }}
+   520→        >
+   521→          {/* Accent top bar */}
+   522→          <div style={{
+   523→            height: '3px',
+   524→            background: `linear-gradient(90deg, ${blog.accent}, transparent)`,
+   525→          }} />
+   526→
+   527→          <Helmet>
+   528→  <title>Insights | By Rohit Suthar</title>
+   529→  <meta name="description" content="Honest takes on system design, AI prompting, hardware, full-stack engineering, and FAANG interview prep — by Rohit Suthar." />
+   530→  <meta name="author" content="Rohit Suthar" />
+   531→  <meta property="og:title" content="Insights | By Rohit Suthar" />
+   532→  <meta property="og:description" content="Honest takes on system design, AI prompting, hardware, full-stack engineering, and FAANG interview prep." />
+   533→  <meta property="og:type" content="website" />
+   534→  <meta name="twitter:card" content="summary" />
+   535→  <meta name="twitter:title" content="Insights | By Rohit Suthar" />
+   536→  <meta name="twitter:description" content="Honest takes on system design, AI prompting, hardware, full-stack engineering, and FAANG interview prep." />
+   537→</Helmet>
+   538→
+   539→          <div style={{ padding: '2rem 2.5rem 2.5rem' }}>
+   540→            {/* Header */}
+   541→            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', marginBottom: '1.75rem' }}>
+   542→              <div style={{ flex: 1 }}>
+   543→                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+   544→                  <span style={{
+   545→                    fontSize: '0.65rem', letterSpacing: '0.22em', textTransform: 'uppercase',
+   546→                    fontFamily: 'monospace', color: blog.accent,
+   547→                    border: `1px solid ${blog.accent}44`, padding: '3px 9px',
+   548→                  }}>
+   549→                    {blog.tag}
+   550→                  </span>
+   551→                  <span style={{
+   552→                    fontSize: '0.65rem', fontFamily: 'monospace',
+   553→                    color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em',
+   554→                  }}>
+   555→                    {blog.readTime}
+   556→                  </span>
+   557→                </div>
+   558→                <h2 style={{
+   559→                  margin: '0 0 0.75rem',
+   560→                  fontSize: 'clamp(1.3rem, 3vw, 1.75rem)',
+   561→                  fontWeight: 300,
+   562→                  color: '#fff',
+   563→                  fontFamily: "'Open Sans', sans-serif",
+   564→                  letterSpacing: '-0.02em',
+   565→                  lineHeight: 1.25,
+   566→                }}>
+   567→                  {blog.title}
+   568→                </h2>
+   569→                <StarRating rating={blog.rating} size={16} />
+   570→              </div>
+   571→
+   572→              {/* Close button */}
+   573→              <button
+   574→                onClick={onClose}
+   575→                style={{
+   576→                  width: '2.2rem', height: '2.2rem',
+   577→                  border: '1px solid rgba(255,255,255,0.15)',
+   578→                  background: 'transparent',
+   579→                  color: 'rgba(255,255,255,0.5)',
+   580→                  fontSize: '1.3rem',
+   581→                  cursor: 'pointer',
+   582→                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+   583→                  flexShrink: 0,
+   584→                  transition: 'border-color 0.2s, color 0.2s, background 0.2s',
+   585→                  lineHeight: 1,
+   586→                }}
+   587→                onMouseEnter={e => {
+   588→                  e.currentTarget.style.borderColor = '#ff3333';
+   589→                  e.currentTarget.style.color = '#ff3333';
+   590→                  e.currentTarget.style.background = 'rgba(255,51,51,0.08)';
+   591→                }}
+   592→                onMouseLeave={e => {
+   593→                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+   594→                  e.currentTarget.style.color = 'rgba(255,255,255,0.5)';
+   595→                  e.currentTarget.style.background = 'transparent';
+   596→                }}
+   597→              >
+   598→                ×
+   599→              </button>
+   600→            </div>
+   601→
+   602→            {/* Divider */}
+   603→            <div style={{
+   604→              height: '1px',
+   605→              background: `linear-gradient(90deg, ${blog.accent}44, transparent)`,
+   606→              marginBottom: '1.75rem',
+   607→            }} />
+   608→
+   609→            {/* Body */}
+   610→            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+   611→              {blog.content.split('\n\n').map((para, i) => (
+   612→                <p key={i} style={{
+   613→                  margin: 0,
+   614→                  fontSize: '0.96rem',
+   615→                  color: 'rgba(255,255,255,0.72)',
+   616→                  fontFamily: "'Open Sans', sans-serif",
+   617→                  lineHeight: 1.85,
+   618→                  letterSpacing: '0.01em',
+   619→                }}>
+   620→                  {para}
+   621→                </p>
+   622→              ))}
+   623→            </div>
+   624→
+   625→            {/* Footer */}
+   626→            <div style={{
+   627→              marginTop: '2rem',
+   628→              paddingTop: '1.25rem',
+   629→              borderTop: '1px solid rgba(255,255,255,0.06)',
+   630→              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+   631→              flexWrap: 'wrap', gap: '0.75rem',
+   632→            }}>
+   633→              <span style={{
+   634→                fontSize: '0.7rem', fontFamily: 'monospace',
+   635→                color: 'rgba(255,255,255,0.2)', letterSpacing: '0.15em',
+   636→                textTransform: 'uppercase',
+   637→              }}>
+   638→                {blog.number} / 06 — Insights by Rohit
+   639→              </span>
+   640→              <button
+   641→                onClick={onClose}
+   642→                style={{
+   643→                  background: 'transparent',
+   644→                  border: '1px solid rgba(255,255,255,0.12)',
+   645→                  color: 'rgba(255,255,255,0.45)',
+   646→                  padding: '0.45rem 1.1rem',
+   647→                  fontFamily: 'monospace', fontSize: '0.75rem',
+   648→                  letterSpacing: '0.1em', cursor: 'pointer',
+   649→                  transition: 'color 0.2s, border-color 0.2s',
+   650→                }}
+   651→                onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; }}
+   652→                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; }}
+   653→              >
+   654→                Close ×
+   655→              </button>
+   656→            </div>
+   657→          </div>
+   658→        </motion.div>
+   659→      </motion.div>
+   660→    </AnimatePresence>
+   661→  );
+   662→};
+   663→
+   664→// ─── MAIN ─────────────────────────────────────────────────────────────────────
+   665→
+   666→export default function Insights() {
+   667→  const [activeBlog, setActiveBlog] = useState(null);
+   668→
+   669→  return (
+   670→    <section style={{
+   671→      minHeight: '100vh',
+   672→      width: '100%',
+   673→      background: '#0a0a0a',
+   674→      color: '#fff',
+   675→      fontFamily: "'Open Sans', sans-serif",
+   676→      boxSizing: 'border-box',
+   677→      overflowX: 'hidden',
+   678→    }}>
+   679→      <Helmet>
+   680→        <title>Insights | Rohit Suthar</title>
+   681→        <meta name="description" content="Thoughts on system design, AI prompting, hardware, full-stack engineering, and FAANG interview prep by Rohit Suthar." />
+   682→      </Helmet>
+   683→
+   684→      <style>{`
+   685→        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@200;300;400;500;600&display=swap');
+   686→        *, *::before, *::after { box-sizing: border-box; }
+   687→        body { margin: 0; background: #0a0a0a; }
+   688→        ::selection { background: rgba(255,51,51,0.25); }
+   689→        ::-webkit-scrollbar { width: 3px; }
+   690→        ::-webkit-scrollbar-track { background: #0a0a0a; }
+   691→        ::-webkit-scrollbar-thumb { background: #222; border-radius: 2px; }
+   692→      `}</style>
+   693→
+   694→      <div style={{
+   695→        maxWidth: '1280px',
+   696→        margin: '0 auto',
+   697→        padding: 'clamp(1.5rem, 4vw, 2.5rem) clamp(1.25rem, 4vw, 3rem) 5rem',
+   698→      }}>
+   699→
+   700→        {/* Back */}
+   701→        <motion.a
+   702→          href="/"
+   703→          whileHover={{ x: -3 }}
+   704→          style={{
+   705→            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+   706→            marginBottom: '2rem',
+   707→            color: 'rgba(255,255,255,0.38)', textDecoration: 'none',
+   708→            fontSize: '0.82rem', fontFamily: 'monospace', letterSpacing: '0.14em',
+   709→            transition: 'color 0.2s',
+   710→          }}
+   711→          onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+   712→          onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.38)'}
+   713→        >
+   714→          ← Back to Home
+   715→        </motion.a>
+   716→
+   717→        {/* Page header */}
+   718→        <motion.div
+   719→          initial={{ opacity: 0, y: 16 }}
+   720→          animate={{ opacity: 1, y: 0 }}
+   721→          transition={{ duration: 0.5 }}
+   722→          style={{ marginBottom: 'clamp(2rem, 4vw, 3.5rem)' }}
+   723→        >
+   724→          <div style={{
+   725→            fontSize: '0.7rem', letterSpacing: '0.35em', textTransform: 'uppercase',
+   726→            color: '#555', fontFamily: 'monospace', marginBottom: '0.85rem',
+   727→          }}>
+   728→            Insights — {String(blogs.length).padStart(2, '0')} Essays
+   729→          </div>
+   730→          <h1 style={{
+   731→            margin: 0,
+   732→            fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
+   733→            fontWeight: 200,
+   734→            letterSpacing: '-0.03em',
+   735→            color: '#fff',
+   736→            fontFamily: "'Open Sans', sans-serif",
+   737→            lineHeight: 1.1,
+   738→          }}>
+   739→            Things Worth Writing Down
+   740→          </h1>
+   741→          <p style={{
+   742→            margin: '1rem 0 0',
+   743→            fontSize: '0.92rem',
+   744→            color: 'rgba(255,255,255,0.38)',
+   745→            fontFamily: 'monospace',
+   746→            letterSpacing: '0.04em',
+   747→            maxWidth: '480px',
+   748→            lineHeight: 1.7,
+   749→          }}>
+   750→            No tutorials. No listicles. Just honest takes on the craft of building software.
+   751→          </p>
+   752→        </motion.div>
+   753→
+   754→        {/* Grid */}
+   755→        <div style={{
+   756→          display: 'grid',
+   757→          gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 340px), 1fr))',
+   758→          gap: '1.25rem',
+   759→        }}>
+   760→          {blogs.map((blog, i) => (
+   761→            <BlogCard
+   762→              key={blog.id}
+   763→              blog={blog}
+   764→              index={i}
+   765→              onClick={setActiveBlog}
+   766→            />
+   767→          ))}
+   768→        </div>
+   769→      </div>
+   770→
+   771→      {/* Modal */}
+   772→      <AnimatePresence>
+   773→        {activeBlog && (
+   774→          <BlogModal blog={activeBlog} onClose={() => setActiveBlog(null)} />
+   775→        )}
+   776→      </AnimatePresence>
+   777→    </section>
+   778→  );
+   779→}

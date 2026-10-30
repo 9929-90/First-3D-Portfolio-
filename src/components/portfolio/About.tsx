@@ -185,13 +185,13 @@ export default function About() {
                 loading="lazy"
               />
               {/* metadata rail on image */}
-              <div className="absolute top-3 right-3 z-[2] text-right font-mono2 text-[8px] tracking-[0.2em] uppercase text-[#A9B2BC]/60 leading-[2.1]">
+              <div className="absolute top-3 right-3 z-[2] text-right font-mono2 text-[8px] tracking-[0.2em] uppercase text-[#A9B2BC] leading-[2.1]">
                 <div>ROI — DATA</div>
                 <div>EXP — 1+ YRS</div>
                 <div className="text-[#ccff00]">STATUS — OPEN</div>
               </div>
               <div className="absolute inset-x-0 bottom-0 flex items-center justify-between px-4 py-3 bg-gradient-to-t from-black/85 to-transparent z-[2]">
-                <span className="font-mono2 text-[9px] tracking-[0.2em] uppercase text-white/85">
+                <span className="font-mono2 text-[9px] tracking-[0.2em] uppercase text-white">
                   ROHIT_SUTHAR — 2025
                 </span>
                 <span className="font-mono2 text-[9px] tracking-[0.2em] uppercase text-[#536C83]">
@@ -208,7 +208,7 @@ export default function About() {
               style={{ float: "right" }}
             >
               <span className="w-2 h-2 rounded-full bg-[#ccff00] animate-pulse" />
-              <span className="font-mono2 text-[9px] tracking-[0.18em] uppercase text-white/85">
+              <span className="font-mono2 text-[9px] tracking-[0.18em] uppercase text-white">
                 Fresher · Fast learner
               </span>
             </motion.div>
@@ -217,7 +217,7 @@ export default function About() {
             <div className="mt-[-14px] relative z-10 ml-0 md:ml-6 mr-0 md:mr-10 flex items-center justify-between px-4 py-3 rounded-md bg-[#10141A]/95 border border-white/[0.08]">
               <div>
                 <div className="font-mono2 text-[8px] tracking-[0.22em] uppercase text-[#7E8994]">Based in</div>
-                <div className="font-body text-[13px] text-white/85 mt-0.5">Udaipur, Rajasthan</div>
+                <div className="font-body text-[13px] text-white mt-0.5">Udaipur, Rajasthan</div>
               </div>
               <div className="text-right">
                 <div className="font-mono2 text-[8px] tracking-[0.22em] uppercase text-[#7E8994]">Role</div>

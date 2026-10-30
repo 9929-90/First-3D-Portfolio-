@@ -156,7 +156,7 @@ export const SKILL_CATEGORIES: SkillCategory[] = [
     id: "mobile",
     index: "10",
     label: "Mobile App",
-    skills: ["React Native", "Expo", "Android", "APK Builds", "Deep Linking", "Push Notif."],
+    skills: ["React Native", "Expo", "Flutter", "Android", "APK Builds", "Deep Linking", "Push Notifications"],
   },
   {
     id: "devops",

@@ -360,7 +360,7 @@ export default function MusicPlayer() {
           ))}
         </span>
 
-        <span className="font-mono2 text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-white/80 group-hover:text-white transition-colors">
+        <span className="font-mono2 text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-white group-hover:text-white transition-colors">
           {playing ? "On Air" : state === "paused" ? "Paused" : "Play"}
         </span>
       </button>

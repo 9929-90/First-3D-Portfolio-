@@ -20,7 +20,7 @@ function ImageFallback({ title }: { title: string }) {
           <span key={i} className="w-[3px] h-[3px] rounded-full bg-[#A9B2BC]" />
         ))}
       </div>
-      <span className="font-mono2 text-[10px] tracking-[0.22em] uppercase text-[#A9B2BC]/30">{title}</span>
+      <span className="font-mono2 text-[10px] tracking-[0.22em] uppercase text-[#7E8994]">{title}</span>
     </div>
   );
 }
@@ -99,7 +99,7 @@ function CaseRow({ p, index }: { p: Project; index: number }) {
                 {p.status === "live" && <span className="w-1 h-1 rounded-full bg-current animate-pulse" />}
                 {status.label}
               </span>
-              <span className="px-3 py-1.5 rounded-full bg-black/55 backdrop-blur-md border border-white/12 font-mono2 text-[8.5px] tracking-[0.2em] uppercase text-white/80">
+              <span className="px-3 py-1.5 rounded-full bg-black/55 backdrop-blur-md border border-white/12 font-mono2 text-[8.5px] tracking-[0.2em] uppercase text-white">
                 {p.tag}
               </span>
             </div>

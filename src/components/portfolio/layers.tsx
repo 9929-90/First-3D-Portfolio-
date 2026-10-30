@@ -143,7 +143,7 @@ export function TelemetryCard({
     >
       {lines.map(([k, v, c]) => (
         <div key={k} className="flex gap-2.5 justify-between min-w-[130px]">
-          <span className="text-[rgba(168,176,187,0.4)]">{k}</span>
+          <span className="text-[#65717B]">{k}</span>
           <span style={{ color: c || accent }}>{v}</span>
         </div>
       ))}

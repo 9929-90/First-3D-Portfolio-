@@ -88,7 +88,7 @@ export default function Skills() {
               <h3 className="font-display font-semibold text-lg tracking-tight text-[#E6E9ED]">
                 {cat.label}
               </h3>
-              <span className="font-mono2 text-[10px] text-[#536C83]/80 group-hover:text-[#536C83] transition-colors">
+              <span className="font-mono2 text-[10px] text-[#536C83] group-hover:text-[#536C83] transition-colors">
                 {cat.index}
               </span>
             </div>

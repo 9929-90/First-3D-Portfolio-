@@ -60,7 +60,7 @@ export default function Navbar() {
                   onClick={() => go(l.href)}
                   className="group relative font-mono2 text-[10.5px] tracking-[0.22em] uppercase text-[#AFB6BE] hover:text-white transition-colors py-2"
                 >
-                  <span className="text-[#536C83]/80 mr-1 text-[8px] align-super">{l.index}</span>
+                  <span className="text-[#536C83] mr-1 text-[8px] align-super">{l.index}</span>
                   {l.label}
                   <span className="absolute left-0 bottom-0 w-full h-px bg-[#536C83] scale-x-0 group-hover:scale-x-100 origin-right transition-transform duration-400 group-hover:origin-left" />
                 </button>
@@ -71,7 +71,7 @@ export default function Navbar() {
           {/* right meta */}
           <div className="flex items-center gap-4 md:gap-6">
             <div className="hidden md:block text-right">
-              <div className="font-mono2 text-[10px] tracking-[0.18em] text-white/85 tabular-nums">
+              <div className="font-mono2 text-[10px] tracking-[0.18em] text-white tabular-nums">
                 {time} <span className="text-[#79828D]">IST</span>
               </div>
               <div className="font-mono2 text-[8.5px] tracking-[0.2em] uppercase text-[#79828D]">

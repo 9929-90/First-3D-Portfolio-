@@ -42,7 +42,7 @@ body {
 }
 
 body {
-  font-family: var(--font-body), system-ui, sans-serif;
+  font-family: var(--font-display), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -68,12 +68,20 @@ body {
   background: #3A4550;
 }
 
-/* ---------- typography helpers ---------- */
+/* ---------- typography helpers ----------
+   One consistent identity: every role (display, body, technical
+   labels) resolves to the same family — the blog-heading font. */
 .font-display {
   font-family: var(--font-display), system-ui, sans-serif;
 }
 .font-mono2 {
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+.font-body {
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+.font-mono {
+  font-family: var(--font-display), system-ui, sans-serif;
 }
 
 .text-stroke {
@@ -270,7 +278,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-size: 11px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
@@ -319,11 +327,11 @@ body {
   background: rgba(83, 108, 131, 0.75);
 }
 .seg-rail__label {
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-size: 8.5px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(169, 178, 188, 0.45);
+  color: var(--silver);
   opacity: 0;
   transform: translateX(-4px);
   transition: opacity 0.35s, transform 0.35s, color 0.35s;
@@ -341,11 +349,11 @@ body {
 
 /* ---------- technical annotation (rocket phase labels) ---------- */
 .tech-anno {
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-size: 9px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: rgba(169, 178, 188, 0.62);
+  color: var(--silver);
 }
 .tech-anno__line {
   display: block;
@@ -368,7 +376,7 @@ body {
   padding: 4px 10px;
   border: 1px solid var(--line);
   border-radius: 2px;
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-size: 10.5px;
   letter-spacing: 0.05em;
   color: #B9C1CA;
@@ -410,4 +418,108 @@ body {
     opacity: 1 !important;
     transform: none !important;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ARTICLE READER — full-essay reading experience (Insights)
+   Editorial measure, comfortable rhythm, same dark identity.
+   ═══════════════════════════════════════════════════════════════ */
+.font-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.article-body {
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+.article-body p {
+  margin: 0 0 1.4em;
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: #B9C1CA;
+}
+@media (min-width: 768px) {
+  .article-body p {
+    font-size: 16.5px;
+    line-height: 1.9;
+  }
+}
+.article-body p:last-child {
+  margin-bottom: 0;
+}
+.article-body strong {
+  color: #E6E9ED;
+  font-weight: 600;
+}
+.article-body em {
+  color: #C9D1D9;
+}
+.article-body h3,
+.article-body h4 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  color: #E6E9ED;
+  letter-spacing: -0.01em;
+  margin: 2.1em 0 0.75em;
+  line-height: 1.25;
+}
+.article-body h3 {
+  font-size: 21px;
+}
+.article-body h4 {
+  font-size: 18px;
+}
+.article-body ul,
+.article-body ol {
+  margin: 0 0 1.4em;
+  padding-left: 1.5em;
+  display: grid;
+  gap: 0.55em;
+  color: #B9C1CA;
+  font-size: 15.5px;
+  line-height: 1.75;
+}
+@media (min-width: 768px) {
+  .article-body ul,
+  .article-body ol {
+    font-size: 16px;
+  }
+}
+.article-body ul {
+  list-style: none;
+  padding-left: 0;
+}
+.article-body ul li {
+  position: relative;
+  padding-left: 1.5em;
+}
+.article-body ul li::before {
+  content: "";
+  position: absolute;
+  left: 0.15em;
+  top: 0.78em;
+  width: 6px;
+  height: 1px;
+  background: #536C83;
+}
+.article-body ol li::marker {
+  color: #536C83;
+  font-variant-numeric: tabular-nums;
+}
+.article-body pre {
+  margin: 0 0 1.5em;
+  padding: 18px 20px;
+  background: #10141A;
+  border: 1px solid rgba(169, 178, 188, 0.12);
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #C9D1D9;
+}
+.article-body pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
 }
