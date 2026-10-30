@@ -67,8 +67,8 @@ function PlanetPanel({ planet }: { planet: PlanetDef }) {
         {planet.kicker}
       </p>
 
-      {/* official SVG technology logos */}
-      <div className="mt-4 grid grid-cols-2 gap-1.5 md:gap-2">
+      {/* official SVG technology logos — large, crisp, brand-coloured */}
+      <div className="mt-4 grid grid-cols-2 gap-2 md:gap-2.5">
         {planet.iconSet.map((ic) => {
           const def = TECH_ICONS[ic.slug];
           if (!def) return null;
@@ -77,19 +77,18 @@ function PlanetPanel({ planet }: { planet: PlanetDef }) {
             <div
               key={ic.slug}
               title={ic.skill}
-              className="flex items-center gap-2 md:gap-2.5 rounded border border-white/10 bg-white/[0.03] px-2.5 py-2 hover:border-[#536C83]/50 transition-colors"
+              className="flex items-center gap-2.5 md:gap-3 rounded border border-white/10 bg-white/[0.04] px-3 py-2.5 hover:border-[#536C83]/50 transition-colors"
             >
               <svg
-                width="19"
-                height="19"
                 viewBox={`0 0 ${def.vw} ${def.vh}`}
-                className="shrink-0"
+                className="shrink-0 w-[26px] h-[26px] md:w-[34px] md:h-[34px]"
                 fill={col}
                 aria-hidden="true"
+                style={{ filter: `drop-shadow(0 0 6px ${col}59)` }}
               >
                 <path d={def.path} />
               </svg>
-              <span className="font-mono2 text-[9.5px] md:text-[10.5px] tracking-wide text-[#C6CDD5] truncate">
+              <span className="font-mono2 text-[11px] md:text-[12px] tracking-wide text-[#C6CDD5] truncate">
                 {ic.skill}
               </span>
             </div>

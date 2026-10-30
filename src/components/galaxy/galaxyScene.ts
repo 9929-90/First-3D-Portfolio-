@@ -74,7 +74,8 @@ export function buildGalaxy(
 
   const seg = isMobile ? 40 : 56;
   const sphereGeo = track(new THREE.SphereGeometry(1, seg, seg / 2));
-  const holoGeo = track(new THREE.PlaneGeometry(0.36, 0.36));
+  /* oversized holo quads — brand glyphs must read clearly at every distance */
+  const holoGeo = track(new THREE.PlaneGeometry(0.8, 0.8));
   const softDot = track(makeSoftDot(64, 1));
   const nebTex = track(makeNebulaTexture(4242));
 
@@ -339,7 +340,8 @@ export function buildGalaxy(
       const t = iconTexs.get(ic.slug);
       if (!t) continue;
       const m = track(new THREE.MeshBasicMaterial({
-        map: t, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false,
+        map: t, transparent: true, opacity: 0.7, side: THREE.DoubleSide,
+        depthWrite: false, toneMapped: false,
       }));
       const q = new THREE.Mesh(holoGeo, m);
       holoIcons.push(q);
@@ -382,10 +384,11 @@ export function buildGalaxy(
             Math.sin(a * 1.7 + pl.phase) * pl.def.look.radius * 0.42,
             Math.sin(a) * R
           );
-          const targetO = 0.3 + 0.62 * w;
+          const targetO = 0.46 + 0.54 * w;
           const m = q.material as THREE.MeshBasicMaterial;
           m.opacity += (targetO - m.opacity) * (1 - Math.exp(-d * 6));
-          const sc = pl.def.look.radius * (0.5 + w * 0.16);
+          /* small screens sit further back (portrait dolly) — nudge badges up */
+          const sc = pl.def.look.radius * (0.6 + w * 0.12) * (isMobile ? 1.18 : 1);
           q.scale.setScalar(sc);
           q.lookAt(_v.setFromMatrixPosition(camera.matrixWorld));
         }

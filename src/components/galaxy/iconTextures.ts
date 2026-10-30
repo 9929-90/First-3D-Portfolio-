@@ -3,8 +3,11 @@ import { TECH_ICONS, readableHex } from "./techIcons";
 
 /* ═══════════════════════════════════════════════════════════════
    HOLOGRAPHIC MARKER TEXTURES — official SVG paths rendered once
-   onto small canvases (128px), used by the 3D orbiting markers.
-   DOM panels draw the same paths inline as crisp SVG at any size.
+   onto crisp canvases (256px), used by the 3D orbiting markers.
+   The brand glyph fills ~70% of the badge (large + legible) on a
+   faint dark glass disc so it never washes out against planet
+   surfaces or star particles. DOM panels draw the same paths
+   inline as crisp SVG at any size.
    ═══════════════════════════════════════════════════════════════ */
 
 function svgToImage(path: string, vw: number, vh: number, color: string): Promise<HTMLImageElement> {
@@ -19,28 +22,34 @@ function svgToImage(path: string, vw: number, vh: number, color: string): Promis
   });
 }
 
-/** draws one holographic marker: faint glow disc + hairline ring + logo */
-function drawMarker(img: HTMLImageElement, color: string, S = 128): HTMLCanvasElement {
+/** draws one holographic marker: dark glass disc + glow + ring + LARGE logo */
+function drawMarker(img: HTMLImageElement, color: string, S = 256): HTMLCanvasElement {
   const c = document.createElement("canvas");
   c.width = c.height = S;
   const ctx = c.getContext("2d")!;
 
+  /* faint dark glass backing — guarantees contrast on any background */
+  ctx.fillStyle = "rgba(8,9,11,0.42)";
+  ctx.beginPath();
+  ctx.arc(S / 2, S / 2, S * 0.485, 0, Math.PI * 2);
+  ctx.fill();
+
   /* soft holographic backdrop */
   const g = ctx.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
-  g.addColorStop(0, "rgba(83,108,131,0.30)");
-  g.addColorStop(0.62, "rgba(83,108,131,0.10)");
+  g.addColorStop(0, "rgba(83,108,131,0.34)");
+  g.addColorStop(0.62, "rgba(83,108,131,0.12)");
   g.addColorStop(1, "rgba(83,108,131,0)");
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, S, S);
 
   /* hairline orbit ring */
-  ctx.strokeStyle = "rgba(169,178,188,0.5)";
+  ctx.strokeStyle = "rgba(169,178,188,0.62)";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.arc(S / 2, S / 2, S * 0.435, 0, Math.PI * 2);
+  ctx.arc(S / 2, S / 2, S * 0.462, 0, Math.PI * 2);
   ctx.stroke();
-  /* the brand glyph */
-  const pad = S * 0.27;
+  /* the brand glyph — oversized for legibility at any camera distance */
+  const pad = S * 0.15;
   ctx.drawImage(img, pad, pad, S - pad * 2, S - pad * 2);
   return c;
 }
@@ -63,7 +72,7 @@ export async function prepareIconTextures(slugs: string[]): Promise<Map<string, 
         const img = await svgToImage(def.path, def.vw, def.vh, readableHex(def.hex));
         const tex = new THREE.CanvasTexture(drawMarker(img, readableHex(def.hex)));
         tex.colorSpace = THREE.SRGBColorSpace;
-        tex.anisotropy = 2;
+        tex.anisotropy = 4;
         cache.set(slug, tex);
         out.set(slug, tex);
       } catch {
